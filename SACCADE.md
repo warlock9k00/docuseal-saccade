@@ -9,6 +9,7 @@ This branch (`saccade`) is the complete source code of the DocuSeal instance Sac
 | `app/views/start_form/_docuseal_logo.html.erb` | The large DocuSeal logo is replaced by a compact header: Saccade logo, a divider, a small DocuSeal logo. On the e-mail code screens: a visible "new code sent" line, a 45 s pause on "Re-send Code", and `autocomplete="one-time-code"` on the code field. |
 | `app/views/submit_form/_docuseal_logo.html.erb` | The same header on the signing form, plus a list of fields to fill. |
 | `app/views/shared/_mailer_attribution.html.erb` | E-mails are sent without the "Sent using ... DocuSeal" footer. The additional terms require the attribution only in interactive user interfaces; the signing screens keep it. |
+| `config/initializers/saccade_mail_from_name.rb` | The sender name in e-mails comes from `SACCADE_MAIL_FROM_NAME` instead of the account name. The account name stays everywhere else. |
 
 Nothing else is changed. In production these files are mounted read-only into the official `docuseal/docuseal:3.3.8` image, see `saccade/run.example.sh`.
 
