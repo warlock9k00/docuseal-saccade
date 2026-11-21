@@ -1,3 +1,5 @@
+> **Saccade fork.** Branch `saccade` is DocuSeal 3.3.8 with a Saccade logo header on the signer screens. See [SACCADE.md](SACCADE.md) for the list of changes. Everything below is the original DocuSeal README.
+
 <h1 align="center" style="border-bottom: none">
   <div>
     <a href="https://www.docuseal.com">
