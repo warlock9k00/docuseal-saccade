@@ -124,7 +124,7 @@
         root.innerHTML = '<nav aria-label="Fields to fill" class="snav-card" style="left:' + left + 'px;top:' + s.top + 'px;width:' + w + 'px;max-height:calc(100vh - ' + (s.top + 16) + 'px)">' + head + list + '</nav>';
       } else {
         var nx = s.next ? 'Next: ' + esc(s.next.label) + (s.next.page ? ' <span style="color:' + MUTED + ';font-weight:400">· p.' + s.next.page + '</span>' : '') : 'All required fields filled';
-        root.innerHTML = '<nav aria-label="Fields to fill" class="snav-top" style="top:' + s.top + 'px;' + (s.mobile ? 'left:12px;right:12px' : 'left:16px;width:380px') + '">' +
+        root.innerHTML = '<nav aria-label="Fields to fill" class="snav-top' + (open ? ' snav-open' : '') + '" style="top:' + s.top + 'px;' + (s.mobile ? 'left:12px;right:12px' : 'left:16px;width:380px') + '">' +
           '<button type="button" class="snav-tg" data-toggle="1" aria-expanded="' + open + '">' +
           (s.todo.length ? '<span class="snav-pill">' + s.todo.length + ' left</span>' : '<span class="snav-pill" style="background:' + DONE + '">' + CHECK + '</span>') +
           '<span class="snav-nx">' + nx + '</span><span class="snav-ch">' + (open ? '&#x2303;' : '&#x2304;') + '</span></button>' +
@@ -151,7 +151,7 @@
       try { initVals = JSON.parse(host.dataset.values || '{}') || {}; } catch (e) { initVals = {}; }
       var css = document.createElement('style');
       css.textContent = [
-        '.snav-card,.snav-top{position:fixed;z-index:35;color:' + INK + ';font-size:13px;line-height:1.25}',
+        '.snav-card,.snav-top{position:fixed;z-index:35;color:' + INK + ';font-size:13px;line-height:1.25}.snav-top.snav-open{z-index:45}',
         '.snav-card{background:#fff;border:1px solid ' + LINE + ';border-radius:14px;padding:14px 8px 8px;box-shadow:0 6px 24px rgba(30,37,45,.08);overflow:auto}',
         '.snav-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 8px;font-weight:700}',
         '.snav-ct{font-weight:400;font-size:12px;color:' + MUTED + '}',
