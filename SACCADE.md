@@ -9,7 +9,7 @@ This branch (`saccade`) is the complete source code of the DocuSeal instance Sac
 | `app/views/start_form/_docuseal_logo.html.erb` | The large DocuSeal logo is replaced by a compact header: Saccade logo, a divider, a small DocuSeal logo. |
 | `app/views/submit_form/_docuseal_logo.html.erb` | The same header on the signing form. |
 
-Nothing else is changed. In production the two files are mounted read-only into the official `docuseal/docuseal:3.3.8` image.
+Nothing else is changed. In production the two files are mounted read-only into the official `docuseal/docuseal:3.3.8` image, see `saccade/run.example.sh`.
 
 Diff: `git diff 3.3.8 saccade -- app/`
 
