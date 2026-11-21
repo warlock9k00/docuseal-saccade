@@ -11,4 +11,181 @@
   </a>
   <%# policy links: DocuSeal pins them to the bottom-right corner on desktop as an 8rem column; our notice is long, so on desktop it goes under the document as on phones. Inside the flex row so it adds no spacing %>
   <style>@media (min-width:768px){div[class~="md:fixed"][class~="md:right-0"][class~="md:bottom-0"]{position:static!important;max-width:42rem;margin:1rem auto 0!important;padding:0 1rem!important;text-align:center!important}div[class~="md:fixed"][class~="md:right-0"][class~="md:bottom-0"]>div{max-width:none!important;flex-direction:row!important;justify-content:center!important;align-items:center!important}}</style>
+  <%# Saccade, 2026-11-21: field navigator ("B — list of fields", chosen by Sasha). Desktop with room on the left: a card with all
+      fields, their page and progress; phone or narrow window: a bar under the header "N left · Next: …" that opens the list.
+      A tap moves DocuSeal to that step through its own progress dots, so DocuSeal still does the saving and scrolling.
+      Reads only DocuSeal's markup (data-fields on <submission-form>, the field areas, the progress dots); after a DocuSeal
+      update check the form, see docs/infra/docuseal-deploy.md. Inline scripts need the CSP nonce. %>
+  <script nonce="<%= content_security_policy_nonce %>">
+  (function () {
+    if (window.__saccadeNav) return;
+    window.__saccadeNav = true;
+    var ACC = '#291334', DONE = '#12b76a', LINE = '#e7e1ec', MUTED = '#8a7f95', INK = '#1e252d';
+    var CHECK = '<svg width="10" height="10" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2.5 6.2l2.3 2.3 4.7-5" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var host = null, steps = null, plainSteps = true, root = null, open = false, lastSig = '', initVals = {};
+
+    function esc (s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+    function empty (v) { return v === null || v === undefined || v === '' || (Array.isArray(v) && !v.length); }
+    function label (f) {
+      var n = (f.title || f.name || f.type || '').replace(/\s*\(.*\)\s*$/, '').replace(/,\s+if\s.*$/i, '');
+      return n.charAt(0).toUpperCase() + n.slice(1);
+    }
+
+    // the same steps as DocuSeal's form.vue stepFields (3.3.8): field order, verification last, plain checkboxes grouped
+    function buildSteps () {
+      var fields = JSON.parse(host.dataset.fields || '[]'), ver = [], out = [];
+      var list = fields.filter(function (f) {
+        if (f.type === 'verification' || f.type === 'kba') { ver.push(f); return false; }
+        return !f.readonly;
+      });
+      if (ver.length) list.push(ver.pop());
+      list.forEach(function (f) {
+        if ((f.conditions || []).length) plainSteps = false;
+        var prev = out[out.length - 1];
+        if (f.type === 'checkbox' && prev && prev[0].type === 'checkbox' && !f.description) prev.push(f); else out.push([f]);
+      });
+      return out;
+    }
+
+    function areaEl (a) {
+      var p = document.getElementById('page-' + a.attachment_uuid + '-' + a.page);
+      if (!p) return null;
+      var ty = a.y * 100, tx = a.x * 100, els = p.querySelectorAll('[style*="top"]');
+      for (var i = 0; i < els.length; i++) {
+        var st = els[i].style;
+        if (st.top && st.left && Math.abs(parseFloat(st.top) - ty) < 0.02 && Math.abs(parseFloat(st.left) - tx) < 0.02) return els[i];
+      }
+      return null;
+    }
+
+    function filled (f) {
+      if (f.type === 'radio') return !!document.querySelector('input[name="radio-area-' + f.uuid + '"]:checked');
+      var els = (f.areas || []).map(areaEl).filter(Boolean);
+      if (!els.length) return !empty(initVals[f.uuid]);
+      return els.some(function (e) {
+        if (e.querySelector('input:checked') || e.querySelector('img')) return true;
+        if (['checkbox', 'multiple', 'signature', 'initials', 'image', 'stamp', 'file'].indexOf(f.type) >= 0) return false;
+        var t = e.innerText.trim().toLowerCase(), n = (f.name || '').toLowerCase();
+        return !!t && n.indexOf(t.slice(0, 12)) !== 0 && t.indexOf('type here') !== 0;
+      });
+    }
+
+    function topOffset () {
+      var b = [].slice.call(document.querySelectorAll('button,a,label')).filter(function (x) {
+        return /^\s*decline\s*$/i.test(x.innerText) && x.getBoundingClientRect().height > 0;
+      })[0] || document.querySelector('[aria-label="Saccade"]');
+      return b ? Math.max(8, Math.round(b.getBoundingClientRect().bottom) + 10) : 16;
+    }
+
+    function state () {
+      var dots = [].slice.call(document.querySelectorAll('.steps-progress button'));
+      var nav = document.querySelector('.steps-progress');
+      var completed = !!(nav && nav.closest('nav[aria-hidden="true"]'));
+      var cur = -1;
+      dots.forEach(function (d, i) { if (/steps-progress-current/.test(d.className)) cur = i; });
+      var rows = steps.map(function (st, i) {
+        var req = st.some(function (f) { return f.required; });
+        var a = st[0].areas && st[0].areas[0];
+        var done = req ? st.every(function (f) { return !f.required || filled(f); }) : st.some(filled);
+        return { i: i, label: st.length > 1 ? label(st[0]) + ' +' + (st.length - 1) : label(st[0]), page: a ? a.page + 1 : null, req: req, done: done, cur: i === cur };
+      });
+      var todo = rows.filter(function (r) { return r.req && !r.done; });
+      var page = document.querySelector('[id^="page-"]');
+      return { rows: rows, todo: todo, next: todo[0] || null, completed: completed, dotsOk: plainSteps && dots.length === steps.length,
+        mobile: innerWidth < 768, pageLeft: page ? Math.round(page.getBoundingClientRect().left) : 0, top: topOffset() };
+    }
+
+    function rowHtml (r, s) {
+      var mark = r.done
+        ? '<span class="snav-mk" style="background:' + DONE + ';border-color:' + DONE + '">' + CHECK + '</span>'
+        : '<span class="snav-mk" style="border-style:' + (r.req ? 'solid' : 'dashed') + ';border-color:' + (r.req ? ACC : '#b9aec4') + (r === s.next ? ';background:' + ACC : '') + '"></span>';
+      return '<button type="button" class="snav-row' + (r.cur ? ' snav-cur' : '') + '" data-step="' + r.i + '">' + mark +
+        '<span class="snav-lb" style="' + (r.done ? 'color:' + MUTED : (r === s.next ? 'font-weight:700' : '')) + '">' + esc(r.label) +
+        (r.req ? '' : ' <span style="color:' + MUTED + ';font-weight:400">· optional</span>') + '</span>' +
+        '<span class="snav-pg">' + (r.page ? 'p.' + r.page : '') + '</span></button>';
+    }
+
+    function render () {
+      var s = state();
+      var show = !s.completed && s.rows.length >= 3 && document.querySelector('[id^="page-"]');
+      var card = !s.mobile && s.pageLeft >= 268;
+      var sig = JSON.stringify([show, card, open, s.top, s.pageLeft, s.rows]);
+      if (sig === lastSig) return;
+      lastSig = sig;
+      root.__s = s;
+      if (!show) { root.innerHTML = ''; return; }
+      var done = s.rows.filter(function (r) { return r.done; }).length, pct = Math.round(done / s.rows.length * 100);
+      var head = '<div class="snav-hd"><span>' + (s.todo.length ? 'To fill: ' + s.todo.length + ' left' : 'All required fields filled') + '</span><span class="snav-ct">' + done + ' / ' + s.rows.length + '</span></div>' +
+        '<div class="snav-bar"><div style="width:' + pct + '%"></div></div>';
+      var list = s.rows.map(function (r) { return rowHtml(r, s); }).join('');
+      if (card) {
+        var w = 236, left = Math.max(16, Math.round((s.pageLeft - w) / 2));
+        root.innerHTML = '<nav aria-label="Fields to fill" class="snav-card" style="left:' + left + 'px;top:' + s.top + 'px;width:' + w + 'px;max-height:calc(100vh - ' + (s.top + 16) + 'px)">' + head + list + '</nav>';
+      } else {
+        var nx = s.next ? 'Next: ' + esc(s.next.label) + (s.next.page ? ' <span style="color:' + MUTED + ';font-weight:400">· p.' + s.next.page + '</span>' : '') : 'All required fields filled';
+        root.innerHTML = '<nav aria-label="Fields to fill" class="snav-top" style="top:' + s.top + 'px;' + (s.mobile ? 'left:12px;right:12px' : 'left:16px;width:380px') + '">' +
+          '<button type="button" class="snav-tg" data-toggle="1" aria-expanded="' + open + '">' +
+          (s.todo.length ? '<span class="snav-pill">' + s.todo.length + ' left</span>' : '<span class="snav-pill" style="background:' + DONE + '">' + CHECK + '</span>') +
+          '<span class="snav-nx">' + nx + '</span><span class="snav-ch">' + (open ? '&#x2303;' : '&#x2304;') + '</span></button>' +
+          (open ? '<div class="snav-dd">' + head + list + '</div>' : '') + '</nav>';
+      }
+    }
+
+    function go (i) {
+      var s = root.__s;
+      var exp = document.getElementById('expand_form_button');
+      var wait = exp && exp.getBoundingClientRect().height > 0 ? (exp.click(), 250) : 0;
+      setTimeout(function () {
+        var dots = document.querySelectorAll('.steps-progress button');
+        if (s && s.dotsOk && dots[i]) { dots[i].click(); return; }
+        var a = steps[i][0].areas && steps[i][0].areas[0], el = a && areaEl(a);
+        if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); if (el.getAttribute('role') === 'button') el.click(); }
+      }, wait);
+    }
+
+    function boot () {
+      host = document.querySelector('submission-form');
+      if (!host || !host.dataset.fields) return false;
+      steps = buildSteps();
+      try { initVals = JSON.parse(host.dataset.values || '{}') || {}; } catch (e) { initVals = {}; }
+      var css = document.createElement('style');
+      css.textContent = [
+        '.snav-card,.snav-top{position:fixed;z-index:35;color:' + INK + ';font-size:13px;line-height:1.25}',
+        '.snav-card{background:#fff;border:1px solid ' + LINE + ';border-radius:14px;padding:14px 8px 8px;box-shadow:0 6px 24px rgba(30,37,45,.08);overflow:auto}',
+        '.snav-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 8px;font-weight:700}',
+        '.snav-ct{font-weight:400;font-size:12px;color:' + MUTED + '}',
+        '.snav-bar{height:4px;border-radius:2px;background:' + LINE + ';margin:8px 8px 6px}.snav-bar>div{height:4px;border-radius:2px;background:' + DONE + '}',
+        '.snav-row{display:flex;width:100%;align-items:center;gap:10px;padding:7px 8px;border-radius:8px;text-align:left;cursor:pointer;background:none}',
+        '.snav-row:hover{background:rgba(41,19,52,.05)}.snav-row.snav-cur{background:rgba(41,19,52,.08)}',
+        '.snav-mk{flex:none;width:18px;height:18px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center}',
+        '.snav-lb{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}',
+        '.snav-pg{flex:none;font-size:11px;color:' + MUTED + '}',
+        '.snav-tg{display:flex;width:100%;align-items:center;gap:10px;background:#fff;border:1px solid ' + LINE + ';border-radius:12px;padding:8px 12px;box-shadow:0 4px 16px rgba(30,37,45,.10);cursor:pointer;text-align:left}',
+        '.snav-pill{flex:none;display:inline-flex;align-items:center;justify-content:center;min-width:22px;background:' + ACC + ';color:#fff;border-radius:999px;font-size:12px;font-weight:600;padding:4px 9px}',
+        '.snav-nx{flex:1;min-width:0;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+        '.snav-ch{flex:none;font-size:16px;color:' + MUTED + '}',
+        '.snav-dd{margin-top:6px;background:#fff;border:1px solid ' + LINE + ';border-radius:12px;padding:10px 4px 4px;box-shadow:0 8px 24px rgba(30,37,45,.12);max-height:55vh;overflow:auto}'
+      ].join('\n');
+      document.head.appendChild(css);
+      root = document.createElement('div');
+      root.id = 'saccade-field-nav';
+      document.body.appendChild(root);
+      root.addEventListener('click', function (e) {
+        var t = e.target.closest('[data-toggle],[data-step]');
+        if (!t) return;
+        if (t.dataset.toggle) { open = !open; render(); return; }
+        open = false;
+        go(+t.dataset.step);
+        render();
+      });
+      ['scroll', 'resize', 'input', 'change', 'click'].forEach(function (ev) { addEventListener(ev, function () { setTimeout(safe, 50); }, { passive: true, capture: true }); });
+      setInterval(safe, 800);
+      return true;
+    }
+
+    function safe () { try { render(); } catch (e) { if (window.console) console.warn('saccade nav', e); } }
+    function start () { try { if (boot()) safe(); } catch (e) { if (window.console) console.warn('saccade nav', e); } }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else setTimeout(start, 0);
+  })();
+  </script>
 </div>
