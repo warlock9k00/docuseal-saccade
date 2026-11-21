@@ -12,3 +12,54 @@
   <%# same 16px top offset as the signing form header (DocuSeal wraps these screens in mt-12); kept inside the flex row so it adds no spacing %>
   <style>.mt-12:has([aria-label="Saccade"]){margin-top:1rem}</style>
 </div>
+<%# Saccade, 2026-11-21: email code screen. DocuSeal shows "Code has been re-sent" as small plain text, easy to miss.
+    Show it as a green status line with the address, and pause "Re-send Code" for 45 s: DocuSeal sends at most
+    2 code e-mails per 45 s per IP, a 3rd click only returns "Too many attempts". %>
+<% code_sent = flash[:notice].present? && flash[:notice] == I18n.t(:code_has_been_resent) %>
+<% code_limited = flash[:alert].present? && flash[:alert] == I18n.t(:too_many_attempts) %>
+<% if code_sent || code_limited %>
+  <% code_email = (params[:email].presence || params.dig(:submitter, :email)).to_s %>
+  <% code_text = if !code_sent
+                   ''
+                 elsif I18n.locale.to_s.start_with?('en') && code_email.present?
+                   "New code sent to #{code_email}. It may take a minute to arrive, please check Spam too."
+                 else
+                   flash[:notice].to_s
+                 end %>
+  <script>
+    (function () {
+      var SENT = <%= code_sent ? 'true' : 'false' %>, TEXT = <%= raw json_escape(code_text.to_json) %>, WAIT = 45;
+      function run () {
+        var form = document.getElementById('code_form'), label = document.getElementById('resend_label');
+        if (!form || !label || label.dataset.saccadeWait) return;
+        var row = label.closest('.justify-between');
+        if (SENT && row && row.firstElementChild) {
+          row.firstElementChild.textContent = '';
+          var box = document.createElement('div');
+          box.setAttribute('role', 'status');
+          box.style.cssText = 'margin-top:8px;padding:8px 12px;border-radius:8px;background:#ecfdf3;border:1px solid #abefc6;color:#067647;font-size:14px;line-height:1.4';
+          box.textContent = '✓ ' + TEXT;
+          row.parentNode.insertBefore(box, row.nextSibling);
+        }
+        var base = label.textContent.trim(), left = WAIT;
+        label.dataset.saccadeWait = '1';
+        label.removeAttribute('for');
+        label.setAttribute('aria-disabled', 'true');
+        label.style.cssText = 'opacity:.45;cursor:default;text-decoration:none';
+        (function tick () {
+          if (left <= 0) {
+            label.textContent = base;
+            label.setAttribute('for', 'resend_code');
+            label.removeAttribute('aria-disabled');
+            label.removeAttribute('style');
+            return;
+          }
+          label.textContent = base + ' (' + left + ' s)';
+          left -= 1;
+          setTimeout(tick, 1000);
+        })();
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else setTimeout(run, 0);
+    })();
+  </script>
+<% end %>
