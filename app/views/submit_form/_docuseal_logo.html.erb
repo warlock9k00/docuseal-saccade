@@ -70,7 +70,10 @@
       });
     }
 
+    // DocuSeal 3.3.8: header #signing_form_header is sticky z-50 (static from 1230 px), the step form sits in a fixed z-50 layer
     function topOffset () {
+      var h = document.getElementById('signing_form_header');
+      if (h && h.getBoundingClientRect().height > 0) return Math.max(8, Math.round(h.getBoundingClientRect().bottom) + 26);
       var b = [].slice.call(document.querySelectorAll('button,a,label')).filter(function (x) {
         return /^\s*decline\s*$/i.test(x.innerText) && x.getBoundingClientRect().height > 0;
       })[0] || document.querySelector('[aria-label="Saccade"]');
@@ -151,7 +154,7 @@
       try { initVals = JSON.parse(host.dataset.values || '{}') || {}; } catch (e) { initVals = {}; }
       var css = document.createElement('style');
       css.textContent = [
-        '.snav-card,.snav-top{position:fixed;z-index:35;color:' + INK + ';font-size:13px;line-height:1.25}.snav-top.snav-open{z-index:45}',
+        '.snav-card,.snav-top{position:fixed;z-index:35;color:' + INK + ';font-size:13px;line-height:1.25}.snav-top.snav-open{z-index:51}',
         '.snav-card{background:#fff;border:1px solid ' + LINE + ';border-radius:14px;padding:14px 8px 8px;box-shadow:0 6px 24px rgba(30,37,45,.08);overflow:auto}',
         '.snav-hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 8px;font-weight:700}',
         '.snav-ct{font-weight:400;font-size:12px;color:' + MUTED + '}',
