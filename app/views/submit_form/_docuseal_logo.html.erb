@@ -18,10 +18,13 @@
       always visible those never appear. The script moves our brand into the header and hides the logo row above it; if
       anything is missing it changes nothing, and the row with the DocuSeal attribution stays as it was. %>
   <style>
-    html.shdr #signing_form_header{position:sticky!important;top:0;height:56px;padding:0 4px!important;gap:14px;margin-bottom:0!important;box-shadow:0 0 0 100vmax var(--shdr-bg,#fff);clip-path:inset(0 -100vmax)}
+    <%# full-width background and bottom line come from box-shadow and border-image outset: these paint past the edges without
+        widening the page (an absolutely placed 100vmax line did, and the page scrolled sideways from 768 px) %>
+    html.shdr #signing_form_header{position:sticky!important;top:0;height:56px;padding:0 4px!important;gap:14px;margin-bottom:0!important;box-shadow:0 0 0 100vmax var(--shdr-bg,#fff);border-image:linear-gradient(to top,#e7e1ec 1px,transparent 1px) fill 0//0 100vmax;clip-path:inset(0 -100vmax)}
     html.shdr #signing_form_header h1{font-size:18px!important;font-weight:600!important;line-height:1.2!important;min-width:0;flex:1}
     html.shdr #signing_form_header>div.group{margin-left:0!important}
-    .shdr-line{position:absolute;left:-100vmax;right:-100vmax;bottom:0;height:1px;background:#e7e1ec;pointer-events:none}
+    <%# DocuSeal's md:-mx-[8px] pushes the header 8 px past the window until the 1000 px column has room (1000 + 2*8 + 15 scrollbar) %>
+    @media (min-width:768px) and (max-width:1031px){html.shdr #signing_form_header{margin-left:0!important;margin-right:0!important;padding:0 12px!important}}
     .shdr-brand{display:flex;align-items:center;gap:8px;flex-shrink:0}
     .shdr-sac{display:flex;align-items:center;gap:7px}
     .shdr-bar{width:1px;height:18px;background:currentColor;opacity:.18;flex-shrink:0}
@@ -63,7 +66,6 @@
       h.insertBefore(brand, h1);
       h.insertBefore(el('span', 'shdr-bar shdr-bar2'), h1);
       box.insertBefore(window.SaccadeLang.seg(), box.firstChild);
-      var line = el('span', 'shdr-line'); line.setAttribute('aria-hidden', 'true'); h.appendChild(line);
       var db = document.getElementById('decline_button');
       if (db && !db.querySelector('svg')) {
         var txt = db.textContent.trim(), sp = el('span', 'shdr-dl');
