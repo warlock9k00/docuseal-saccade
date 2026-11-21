@@ -1,0 +1,133 @@
+<%# Saccade, 2026-11-21: EN/RU switch for the signing screens (decision of Sasha: English by default, Russian for a browser in
+    Russian, the choice is remembered). Our texts carry both languages: an English paragraph, an empty line, a Russian one
+    (step descriptions, the completion message, Policy Links parts separated by " · "). This script shows the paragraphs of
+    the chosen language; a paragraph with any Cyrillic letter is Russian, with Latin letters only English, without letters
+    shown in both. Without the script both languages stay visible. DocuSeal's own buttons and labels are not translated
+    (3.3.8 has no Russian). The choice goes to the cookie saccade_lang, which config/initializers/saccade_lang_event.rb
+    writes into the submission events, and to localStorage. Rendered by submit_form/_docuseal_logo and
+    start_form/_docuseal_logo. Vue elements are never rewritten: next to DocuSeal's own text a span.slang-v with the chosen
+    paragraphs is added and the original is hidden by CSS, so Vue keeps patching its own nodes.
+    Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade. %>
+<style>
+  .slang-seg{display:flex;border:1px solid #e7e1ec;border-radius:9px;padding:2px;background:#fff;flex-shrink:0}
+  .slang-seg button{padding:3px 9px;border-radius:7px;font-size:12px;font-weight:600;line-height:18px;color:#8a7f95;background:none;cursor:pointer}
+  .slang-seg button[aria-pressed="true"]{background:#291334;color:#fff}
+  [data-slang-on]>span:not(.slang-v){display:none!important}
+</style>
+<script nonce="<%= content_security_policy_nonce %>">
+  (function () {
+    if (window.SaccadeLang) return;
+    var KEY = 'saccade_lang', subs = [], segs = [], lang = read(), queued = false;
+
+    function read () {
+      var m = document.cookie.match(/(?:^|;\s*)saccade_lang=(en|ru)(?:;|$)/);
+      if (m) return m[1];
+      try { var s = localStorage.getItem(KEY); if (s === 'en' || s === 'ru') return s; } catch (e) {}
+      var n = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+      return /^ru\b/i.test(n) ? 'ru' : 'en';
+    }
+    function save () {
+      document.cookie = KEY + '=' + lang + '; path=/; max-age=31536000; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+      try { localStorage.setItem(KEY, lang); } catch (e) {}
+      document.documentElement.setAttribute('data-saccade-lang', lang);
+    }
+    function langOf (text) { return /[А-Яа-яЁё]/.test(text) ? 'ru' : /[A-Za-z]/.test(text) ? 'en' : ''; }
+
+    // paragraphs of a DocuSeal MarkdownContent span: runs of nodes split by two or more <br> (comments and blank text skipped)
+    function paras (span) {
+      var out = [[]], brs = 0, pend = [];
+      [].forEach.call(span.childNodes, function (n) {
+        if (n.nodeType === 8) return;
+        if (n.nodeType === 1 && n.tagName === 'BR') { brs++; pend.push(n); return; }
+        if (n.nodeType === 3 && !n.nodeValue.trim()) { (brs ? pend : out[out.length - 1]).push(n); return; }
+        if (brs >= 2) out.push([]); else pend.forEach(function (p) { out[out.length - 1].push(p); });
+        brs = 0; pend = [];
+        out[out.length - 1].push(n);
+      });
+      return out.filter(function (p) { return p.length; });
+    }
+
+    function applyBox (box) {
+      var src = null, view = null;
+      [].forEach.call(box.children, function (c) {
+        if (c.classList.contains('slang-v')) view = c; else if (!src && c.tagName === 'SPAN') src = c;
+      });
+      var sig = src ? lang + '|' + src.textContent : '';
+      if (box.__slang === sig) return;
+      box.__slang = sig;
+      var ps = src ? paras(src) : [], ls = ps.map(function (p) { return langOf(p.map(function (n) { return n.textContent; }).join('')); });
+      if (ls.indexOf('en') < 0 || ls.indexOf('ru') < 0) { if (view) view.remove(); box.removeAttribute('data-slang-on'); return; }
+      if (!view) { view = document.createElement('span'); view.className = 'slang-v'; box.appendChild(view); }
+      view.setAttribute('lang', lang);
+      view.textContent = '';
+      var first = true;
+      ps.forEach(function (p, i) {
+        if (ls[i] && ls[i] !== lang) return;
+        if (!first) { view.appendChild(document.createElement('br')); view.appendChild(document.createElement('br')); }
+        first = false;
+        p.forEach(function (n) { view.appendChild(n.cloneNode(true)); });
+      });
+      box.setAttribute('data-slang-on', '');
+    }
+
+    // Policy Links is server HTML (MarkdownToHtml), safe to rewrite: keep the part of the chosen language and the links
+    function applyPolicy (el) {
+      if (!el.hasAttribute('data-slang-src')) {
+        if (el.innerHTML.indexOf(' · ') < 0) return;
+        el.setAttribute('data-slang-src', el.innerHTML);
+      }
+      var parts = el.getAttribute('data-slang-src').split(/\s·\s/);
+      var ls = parts.map(function (p) { return /<a\s/i.test(p) ? '' : langOf(p.replace(/<[^>]*>/g, '')); });
+      if (ls.indexOf('en') < 0 || ls.indexOf('ru') < 0) return;
+      var html = parts.filter(function (p, i) { return !ls[i] || ls[i] === lang; }).join(' · ');
+      if (el.innerHTML !== html) el.innerHTML = html;
+    }
+
+    function applyAll () {
+      queued = false;
+      try {
+        document.querySelectorAll('.field-description-text, .completed-form-message-body').forEach(applyBox);
+        // Policy Links: submit_form/show (md:fixed block) and start_form/_policy
+        document.querySelectorAll('div[class~="md:fixed"][class~="md:bottom-0"] > div, div.max-w-md.flex-wrap.gap-1.justify-center').forEach(function (c) {
+          var ps = c.querySelectorAll('p');
+          (ps.length ? [].slice.call(ps) : [c]).forEach(applyPolicy);
+        });
+      } catch (e) { if (window.console) console.warn('saccade lang', e); }
+    }
+    function queue () { if (!queued) { queued = true; (window.requestAnimationFrame || setTimeout)(applyAll); } }
+
+    function paintSegs () {
+      segs.forEach(function (g) {
+        [].forEach.call(g.querySelectorAll('button'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-l') === lang ? 'true' : 'false'); });
+      });
+    }
+
+    window.SaccadeLang = {
+      get: function () { return lang; },
+      t: function (en, ru) { return lang === 'ru' ? ru : en; },
+      onChange: function (fn) { subs.push(fn); },
+      set: function (l) {
+        if ((l !== 'en' && l !== 'ru') || l === lang) return;
+        lang = l; save(); paintSegs(); applyAll();
+        subs.forEach(function (fn) { try { fn(lang); } catch (e) { if (window.console) console.warn('saccade lang', e); } });
+      },
+      seg: function () {
+        var g = document.createElement('div');
+        g.className = 'slang-seg'; g.setAttribute('role', 'group'); g.setAttribute('aria-label', 'Language / Язык');
+        [['en', 'EN', 'English'], ['ru', 'RU', 'Русский']].forEach(function (p) {
+          var b = document.createElement('button');
+          b.type = 'button'; b.textContent = p[1]; b.title = p[2]; b.setAttribute('data-l', p[0]); b.setAttribute('lang', p[0]);
+          b.addEventListener('click', function () { window.SaccadeLang.set(p[0]); });
+          g.appendChild(b);
+        });
+        segs.push(g); paintSegs();
+        return g;
+      },
+      apply: applyAll
+    };
+
+    save();
+    new MutationObserver(queue).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll); else queue();
+  })();
+</script>
