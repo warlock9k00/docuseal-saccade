@@ -92,7 +92,8 @@
       var todo = rows.filter(function (r) { return r.req && !r.done; });
       var page = document.querySelector('[id^="page-"]');
       return { rows: rows, todo: todo, next: todo[0] || null, completed: completed, dotsOk: plainSteps && dots.length === steps.length,
-        mobile: innerWidth < 768, pageLeft: page ? Math.round(page.getBoundingClientRect().left) : 0, top: topOffset() };
+        // the card may sit on the PDF's white margin (~8% of the page width), never over the text
+        mobile: innerWidth < 768, textLeft: page ? Math.round(page.getBoundingClientRect().left + page.getBoundingClientRect().width * 0.08) : 0, top: topOffset() };
     }
 
     function rowHtml (r, s) {
@@ -108,8 +109,8 @@
     function render () {
       var s = state();
       var show = !s.completed && s.rows.length >= 3 && document.querySelector('[id^="page-"]');
-      var card = !s.mobile && s.pageLeft >= 268;
-      var sig = JSON.stringify([show, card, open, s.top, s.pageLeft, s.rows]);
+      var card = !s.mobile && s.textLeft >= 16 + 236 + 12;
+      var sig = JSON.stringify([show, card, open, s.top, s.textLeft, s.rows]);
       if (sig === lastSig) return;
       lastSig = sig;
       root.__s = s;
@@ -119,7 +120,7 @@
         '<div class="snav-bar"><div style="width:' + pct + '%"></div></div>';
       var list = s.rows.map(function (r) { return rowHtml(r, s); }).join('');
       if (card) {
-        var w = 236, left = Math.max(16, Math.round((s.pageLeft - w) / 2));
+        var w = 236, left = Math.max(16, Math.round((s.textLeft - 12 - w) / 2));
         root.innerHTML = '<nav aria-label="Fields to fill" class="snav-card" style="left:' + left + 'px;top:' + s.top + 'px;width:' + w + 'px;max-height:calc(100vh - ' + (s.top + 16) + 'px)">' + head + list + '</nav>';
       } else {
         var nx = s.next ? 'Next: ' + esc(s.next.label) + (s.next.page ? ' <span style="color:' + MUTED + ';font-weight:400">· p.' + s.next.page + '</span>' : '') : 'All required fields filled';
