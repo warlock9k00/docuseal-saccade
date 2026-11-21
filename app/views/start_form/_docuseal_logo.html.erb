@@ -64,3 +64,18 @@
     })();
   </script>
 <% end %>
+<%# Saccade, 2026-11-21: e-mail code field. DocuSeal renders it without autocomplete, so iPhone/Mac do not offer the code
+    from Mail above the keyboard. autocomplete="one-time-code" turns that on (Safari; Chrome on Android uses its own rules).
+    Covers both code screens: start_form/email_verification and submit_form/email_2fa render this partial. %>
+<script nonce="<%= content_security_policy_nonce %>">
+  (function () {
+    function run () {
+      var input = document.querySelector('#code_form input[name*="one_time_code"]');
+      if (!input) return;
+      input.setAttribute('autocomplete', 'one-time-code');
+      input.setAttribute('autocapitalize', 'off');
+      input.setAttribute('spellcheck', 'false');
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run); else run();
+  })();
+</script>

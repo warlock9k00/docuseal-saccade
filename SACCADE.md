@@ -6,10 +6,11 @@ This branch (`saccade`) is the complete source code of the DocuSeal instance Sac
 
 | File | Change |
 |---|---|
-| `app/views/start_form/_docuseal_logo.html.erb` | The large DocuSeal logo is replaced by a compact header: Saccade logo, a divider, a small DocuSeal logo. |
-| `app/views/submit_form/_docuseal_logo.html.erb` | The same header on the signing form. |
+| `app/views/start_form/_docuseal_logo.html.erb` | The large DocuSeal logo is replaced by a compact header: Saccade logo, a divider, a small DocuSeal logo. On the e-mail code screens: a visible "new code sent" line, a 45 s pause on "Re-send Code", and `autocomplete="one-time-code"` on the code field. |
+| `app/views/submit_form/_docuseal_logo.html.erb` | The same header on the signing form, plus a list of fields to fill. |
+| `app/views/shared/_mailer_attribution.html.erb` | E-mails are sent without the "Sent using ... DocuSeal" footer. The additional terms require the attribution only in interactive user interfaces; the signing screens keep it. |
 
-Nothing else is changed. In production the two files are mounted read-only into the official `docuseal/docuseal:3.3.8` image, see `saccade/run.example.sh`.
+Nothing else is changed. In production these files are mounted read-only into the official `docuseal/docuseal:3.3.8` image, see `saccade/run.example.sh`.
 
 Diff: `git diff 3.3.8 saccade -- app/`
 
@@ -17,4 +18,4 @@ Diff: `git diff 3.3.8 saccade -- app/`
 
 DocuSeal and these changes are licensed under AGPL-3.0, see `LICENSE` and `LICENSE_ADDITIONAL_TERMS`. The DocuSeal attribution ("Powered by DocuSeal" and the DocuSeal logo) is kept as those terms require.
 
-The Saccade logo inside the two files is a trademark of its owner. It is not licensed under the AGPL and may not be reused.
+The Saccade logo inside these files is a trademark of its owner. It is not licensed under the AGPL and may not be reused.
