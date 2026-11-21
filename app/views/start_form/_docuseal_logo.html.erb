@@ -26,7 +26,8 @@
                  else
                    flash[:notice].to_s
                  end %>
-  <script>
+  <%# inline scripts need the CSP nonce: DocuSeal sends script-src 'self' 'nonce-…' on every GET %>
+  <script nonce="<%= content_security_policy_nonce %>">
     (function () {
       var SENT = <%= code_sent ? 'true' : 'false' %>, TEXT = <%= raw json_escape(code_text.to_json) %>, WAIT = 45;
       function run () {
