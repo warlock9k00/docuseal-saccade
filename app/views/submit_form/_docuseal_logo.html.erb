@@ -9,4 +9,6 @@
     <%= render 'shared/logo', width: '16px', height: '16px' %>
     <span class="text-sm font-semibold"><%= Docuseal.product_name %></span>
   </a>
+  <%# policy links: DocuSeal pins them to the bottom-right corner on desktop as an 8rem column; our notice is long, so on desktop it goes under the document as on phones. Inside the flex row so it adds no spacing %>
+  <style>@media (min-width:768px){div[class~="md:fixed"][class~="md:right-0"][class~="md:bottom-0"]{position:static!important;max-width:42rem;margin:1rem auto 0!important;padding:0 1rem!important;text-align:center!important}div[class~="md:fixed"][class~="md:right-0"][class~="md:bottom-0"]>div{max-width:none!important;flex-direction:row!important;justify-content:center!important;align-items:center!important}}</style>
 </div>
