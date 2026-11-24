@@ -12,6 +12,9 @@
       itself carries DocuSeal's original attribution line ("Powered by DocuSeal", shared/_powered_by, link to docuseal.com).
       Code, error and other screens without that line keep the mark (LICENSE_ADDITIONAL_TERMS, AGPL 7(b)). No :has support -> mark stays. %>
   <style>body:has(a.underline[href^="https://www.docuseal.com"]) .sds-hide{display:none!important}</style>
+  <%# Saccade, 2026-11-24 (Sasha: every text link underlined, plain-looking links read as text): links without a class are text
+      links (Policy Links, markdown in step descriptions); buttons, logos and the EN|RU switch carry classes and are not touched. %>
+  <style>a[href]:not([class]){text-decoration:underline!important;text-underline-offset:2px}</style>
   <%= render 'shared/saccade_lang' %>
   <%# Saccade, 2026-11-21: header A (decision of Sasha). One sticky row at every width: Saccade mark | DocuSeal · document name ·
       EN|RU · Decline · Download; 56 px on desktop, 52 px on a phone (there: mark | DocuSeal icon, Decline as ✕). DocuSeal 3.3.8
