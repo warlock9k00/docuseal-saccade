@@ -1,3 +1,6 @@
+<%# Saccade, 2026-11-24: sign-off is just "Thanks," without the account name (Saccade Media House, Inc.): the Saccade Production signature
+    follows right below it (layouts/mailer.html.erb). The rest is DocuSeal 3.3.8 as is. Modification of DocuSeal 3.3.8 (AGPL-3.0);
+    source: https://github.com/warlock9k00/docuseal-saccade. %>
 <% if @body.present? %>
   <%= render 'custom_content', content: @body, submitter: @submitter, sig: @sig %>
 <% else %>
@@ -8,6 +11,6 @@
     <%= link_to @submitter.submission.name || @submitter.submission.template&.name, submissions_preview_url(@submitter.submission.slug, { sig: @sig, host: @custom_domain || ENV.fetch('EMAIL_HOST', Docuseal.default_url_options[:host]) }.compact) %>
   </p>
   <p>
-  <%= t('thanks') %>,<br><%= @current_account.name %>
+  <%= t('thanks') %>,
   </p>
 <% end %>
