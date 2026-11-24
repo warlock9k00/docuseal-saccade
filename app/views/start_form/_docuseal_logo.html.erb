@@ -1,13 +1,17 @@
-<%# Saccade, 2026-11-21: compact header "Saccade | DocuSeal" instead of the large DocuSeal logo. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade. The Saccade logo is its owner's trademark and is not licensed under AGPL. %>
+<%# Saccade, 2026-11-24: DocuSeal mark hidden where the "Powered by DocuSeal" line is on the page. 2026-11-21: compact header "Saccade | DocuSeal" instead of the large DocuSeal logo. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade. The Saccade logo is its owner's trademark and is not licensed under AGPL. %>
 <div id="saccade-brand-row" class="flex justify-center items-center" style="gap:9px">
   <span class="flex items-center" style="gap:9px" role="img" aria-label="Saccade Media House"><img src="/saccade-media-house-logo.png" alt="" aria-hidden="true" width="182" height="28" style="display:block;max-width:100%;height:auto"></span>
-  <span aria-hidden="true" style="width:1px;height:20px;background:currentColor;opacity:.18;margin:0 4px"></span>
-  <a href="/" class="flex items-center opacity-70" style="gap:5px">
+  <span class="sds-hide" aria-hidden="true" style="width:1px;height:20px;background:currentColor;opacity:.18;margin:0 4px"></span>
+  <a href="/" class="sds-hide flex items-center opacity-70" style="gap:5px">
     <%= render 'shared/logo', width: '16px', height: '16px' %>
     <span class="text-sm font-semibold">DocuSeal</span>
   </a>
   <%# same 16px top offset as the signing form header (DocuSeal wraps these screens in mt-12); kept inside the flex row so it adds no spacing %>
   <style>.mt-12:has([aria-label^="Saccade"]){margin-top:1rem}</style>
+  <%# Saccade, 2026-11-24 (Sasha: DocuSeal out of the header except the code screens): the DocuSeal mark is hidden only where the page
+      itself carries DocuSeal's original attribution line ("Powered by DocuSeal", shared/_powered_by, link to docuseal.com).
+      Code, error and other screens without that line keep the mark (LICENSE_ADDITIONAL_TERMS, AGPL 7(b)). No :has support -> mark stays. %>
+  <style>body:has(a.underline[href^="https://www.docuseal.com"]) .sds-hide{display:none!important}</style>
   <%= render 'shared/saccade_lang' %>
   <%# Saccade, 2026-11-21: the same EN/RU switch as in the signing header, at the end of this row: the start page asks for the
       e-mail before the form, and the short notice under Start (Policy Links) must be readable in the chosen language. %>
