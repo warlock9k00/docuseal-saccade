@@ -1,0 +1,350 @@
+# Тексты формы подписи DocuSeal — ЕДИНСТВЕННОЕ место, где они живут (с 24.11.2026).
+# Сервер читает файл на лету: правка → `docs/infra/ds texts` (проверит и зальёт), перезапуск не нужен.
+# Тексты в базе шаблонов (description, completed_message) больше не показываются, если поле есть здесь.
+#
+# fields:      по имени поля в шаблоне (как в редакторе DocuSeal). Общий текст для всех шаблонов.
+#   title_ru:  название шага по-русски (по-английски — само имя поля)
+#   hint:      подсказка под названием шага: en / ru, абзацы через пустую строку; ссылки — [текст](url)
+# templates:   по id шаблона. name — для ориентира; name_ru — название документа по-русски;
+#   fields:    переопределить текст поля только в этом шаблоне (hint: ~ — без подсказки);
+#   completed_body: свой текст экрана после подписи.
+# completed:   экран после подписи по умолчанию.  options_ru: варианты ответа (в документ уходит английское).
+# title_patterns_ru: регулярка → русское название (Signature p.10 → Подпись, с. 10).
+# name_parts_ru: замены в названии документа (тестовые копии).
+#
+# Новое поле → добавить сюда (title_ru + hint), иначе в RU шаг будет по-английски; `ds texts` покажет такие поля.
+# Правила текста: в русском — русские названия кнопок («Далее», «Завершить»), имена собственные как есть.
+
+completed:
+  title:
+    en: Thank you!
+    ru: Спасибо!
+  body:
+    en: 'Saccade Media House will countersign the Agreement and send you a copy of the fully signed Agreement. Questions: legal@saccadeproduction.com.'
+    ru: Saccade Media House подпишет договор со своей стороны и пришлёт вам копию договора, подписанного всеми сторонами. Вопросы — legal@saccadeproduction.com.
+options_ru:
+  Individual: Физлицо
+  Sole proprietor: ИП
+  Entity: Компания
+title_patterns_ru:
+  "\\ASignature p\\.\\s*(\\d+)\\z": Подпись, с. \1
+  "\\ADate p\\.\\s*(\\d+)\\z": Дата, с. \1
+name_parts_ru:
+  'TEST - ': 'ТЕСТ — '
+  " (check)": " (проверка)"
+fields:
+  Full name (as in passport, Latin):
+    title_ru: Полное имя (как в паспорте, латиницей)
+    hint:
+      en: |-
+        As in your passport, in Latin letters.
+
+        **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter or upload in this form (name, status, address, tax ID, email, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+        We use them to conclude this Agreement, perform it and keep proof of it. The legal basis is that this is necessary to conclude and perform the Agreement with you (if you sign for an entity, our legitimate interest in concluding it with that entity), and our legitimate interest in keeping proof of it and in establishing, exercising or defending legal claims. You are not legally required to provide them, but without the required fields the Agreement cannot be signed.
+
+        The data is stored for us by Hetzner on our server in Germany and on Google Drive: in backups encrypted with our key before upload, which Google cannot read, and as copies of the signed Agreement and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us.
+
+        Apart from these providers, we disclose it only to the Affiliate that co-signs this Agreement, if any, to our legal and accounting advisers and, where needed to prove or enforce this Agreement, to the Client and Affiliates it protects, courts or authorities.
+
+        We keep it while this Agreement is in force and afterwards for as long as claims under it can be brought.
+
+        You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what we still need to perform this Agreement or to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+      ru: |-
+        Как в паспорте, латиницей.
+
+        Перевод для удобства: договор составлен на английском (п. 9.6); при расхождении этого перевода с английским текстом действует английский.
+
+        **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите или загружаете в эту форму (имя, статус, адрес, налоговый номер, почта, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+        Они нужны, чтобы заключить и исполнять этот договор и хранить доказательство договора. Правовое основание — это необходимо, чтобы заключить и исполнять договор с вами (если подписываете за компанию — наш законный интерес заключить его с ней), и наш законный интерес хранить доказательство договора и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей договор не подписать.
+
+        Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске: в резервных копиях, зашифрованных нашим ключом до загрузки (их Google прочитать не может), и как копии подписанного договора и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет.
+
+        Кроме этих провайдеров, передаём данные только аффилированному лицу, которое тоже подписывает договор (если есть), нашим юристам и бухгалтерам, а когда нужно доказать договор или добиться его исполнения, — клиенту и нашим аффилированным лицам, которых защищает договор, суду или властям.
+
+        Храним, пока действует договор, и после — пока по нему можно предъявить требования.
+
+        Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно для исполнения договора или для требований по нему и защиты от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+  Status:
+    title_ru: Статус
+    hint:
+      en: 'Choose one: Individual, Sole proprietor or Entity (a company). Self-employed without sole proprietor registration: Individual.'
+      ru: 'Выберите одно: физлицо, ИП или компания. Самозанятый без ИП — физлицо.'
+  Trade name or entity name:
+    title_ru: Название ИП или компании
+    hint:
+      en: 'Only for a sole proprietor or an entity: its name. Individuals skip this.'
+      ru: 'Только для ИП или компании: название. Физлицу — пропустить.'
+  Address:
+    title_ru: Адрес
+    hint:
+      en: 'Full address in Latin letters: street, building, city, postcode, country.'
+      ru: 'Полный адрес латиницей: улица, дом, город, индекс, страна.'
+  Tax ID:
+    title_ru: Налоговый номер
+    hint:
+      en: Your tax or registration number (for an entity — the company's), if any. You may skip it.
+      ru: ИНН, налоговый или регистрационный номер (для компании — её), если есть. Можно пропустить.
+  Email:
+    title_ru: Почта
+    hint:
+      en: Your email, the same one you entered at the start.
+      ru: Ваша почта — та же, что вы ввели в начале.
+  Electronic signature consent:
+    title_ru: Согласие на электронную подпись
+    hint:
+      en: I agree to sign this Agreement electronically. I confirm that I am the person named in it or am authorised to sign for that person, and that I am signing through an email address that belongs to me and that only I control. I agree that my electronic signature has the same legal effect as my handwritten signature. Without this box ticked, the Agreement cannot be signed.
+      ru: 'Перевод для удобства (действует английский текст): соглашаюсь подписать договор электронно; подтверждаю, что я — лицо, указанное в договоре, или вправе подписать за него и что подписываю через свою почту, которая принадлежит мне и которой управляю только я; соглашаюсь, что моя электронная подпись имеет ту же силу, что подпись от руки. Без этой галочки подписать нельзя.'
+  Signatory full name:
+    title_ru: Имя подписанта
+    hint:
+      en: Who signs. If you sign for yourself, your full name in Latin letters.
+      ru: Кто подписывает. Если за себя — ваше полное имя латиницей.
+  Capacity, if signing for an entity:
+    title_ru: Должность, если подписываете за компанию
+    hint:
+      en: 'Only if you sign for an entity: your position. Otherwise skip.'
+      ru: 'Только если подписываете за компанию: должность. Иначе пропустить.'
+  Recipient signature:
+    title_ru: Подпись
+    hint:
+      en: Draw it with your finger or mouse, type your name or upload a photo of your signature.
+      ru: Нарисуйте пальцем или мышью, наберите имя или загрузите фото подписи.
+  Recipient date:
+    title_ru: Дата
+  Review before sending:
+    title_ru: Проверка перед отправкой
+    hint:
+      en: Your signature is in place, but nothing has been sent yet. Minimize this panel (arrows in the top corner) and check the Agreement. To fix something, tap a dot below and go back to that step. If all is correct, tick the box and press Complete.
+      ru: 'Подпись стоит, но ничего ещё не отправлено. Сверните это окно (стрелки в углу) и проверьте договор. Исправить — нажмите точку ниже и вернитесь к нужному шагу. Всё верно — поставьте галочку и нажмите «Завершить». Галочка значит: «Я проверил(а) подписанный договор и хочу его отправить».'
+  Agreement No.:
+    title_ru: Номер договора
+  Company signature:
+    title_ru: Подпись компании
+  Company date:
+    title_ru: Дата (компания)
+  Affiliate signature (Sec. 9.7):
+    title_ru: Подпись аффилированного лица (п. 9.7)
+  Affiliate date:
+    title_ru: Дата (аффилированное лицо)
+  Hand-signed NDA (scan):
+    title_ru: NDA, подписанное от руки (скан)
+    hint:
+      en: |-
+        This Agreement must be signed by hand or with a qualified electronic signature — see Annex A. 1) [Download the PDF](https://drive.google.com/file/d/1jJILYbin71kbGqyOAPJPWHnqP1H-Cz8z/view). 2) Fill in page 1 and the Recipient signature block, print, sign by hand and date it. 3) Upload here a clear scan or photo of all pages, or the PDF file itself signed with a qualified electronic signature (unchanged, not a printout or screenshot). If you signed by hand, keep the original: we may ask you to send it.
+
+        **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter or upload in this form (name, status, address, tax ID, email, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+        We use them to conclude this Agreement, perform it and keep proof of it. The legal basis is that this is necessary to conclude and perform the Agreement with you (if you sign for an entity, our legitimate interest in concluding it with that entity), and our legitimate interest in keeping proof of it and in establishing, exercising or defending legal claims. You are not legally required to provide them, but without the required fields the Agreement cannot be signed.
+
+        The data is stored for us by Hetzner on our server in Germany and on Google Drive: in backups encrypted with our key before upload, which Google cannot read, and as copies of the signed Agreement and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us.
+
+        Apart from these providers, we disclose it only to the Affiliate that co-signs this Agreement, if any, to our legal and accounting advisers and, where needed to prove or enforce this Agreement, to the Client and Affiliates it protects, courts or authorities.
+
+        We keep it while this Agreement is in force and afterwards for as long as claims under it can be brought.
+
+        You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what we still need to perform this Agreement or to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+      ru: |-
+        Перевод для удобства (действует английский текст): подпись — от руки или квалифицированной электронной подписью (см. приложение A). [Скачайте PDF](https://drive.google.com/file/d/1jJILYbin71kbGqyOAPJPWHnqP1H-Cz8z/view), заполните первую страницу и блок подписи получателя (в документе — Recipient), распечатайте, подпишите ручкой и поставьте дату. Загрузите сюда чёткий скан или фото всех страниц — или сам PDF-файл с квалифицированной электронной подписью, без изменений (не распечатку и не скриншот). Если подписали от руки, сохраните оригинал — можем попросить прислать.
+
+        Перевод для удобства: договор составлен на английском (п. 9.6); при расхождении этого перевода с английским текстом действует английский.
+
+        **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите или загружаете в эту форму (имя, статус, адрес, налоговый номер, почта, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+        Они нужны, чтобы заключить и исполнять этот договор и хранить доказательство договора. Правовое основание — это необходимо, чтобы заключить и исполнять договор с вами (если подписываете за компанию — наш законный интерес заключить его с ней), и наш законный интерес хранить доказательство договора и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей договор не подписать.
+
+        Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске: в резервных копиях, зашифрованных нашим ключом до загрузки (их Google прочитать не может), и как копии подписанного договора и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет.
+
+        Кроме этих провайдеров, передаём данные только аффилированному лицу, которое тоже подписывает договор (если есть), нашим юристам и бухгалтерам, а когда нужно доказать договор или добиться его исполнения, — клиенту и нашим аффилированным лицам, которых защищает договор, суду или властям.
+
+        Храним, пока действует договор, и после — пока по нему можно предъявить требования.
+
+        Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно для исполнения договора или для требований по нему и защиты от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+  Hand-signed copy confirmation:
+    title_ru: Подтверждение подписанной копии
+    hint:
+      en: I confirm that the uploaded file is this Agreement signed by me by hand or with my qualified electronic signature. Uploading it delivers my signed copy under Section 9.6 and Annex A; this form does not replace my signature.
+      ru: 'Перевод для удобства (действует английский текст): подтверждаю, что загруженный файл — этот договор, подписанный мной от руки или моей квалифицированной электронной подписью. Загрузка — передача моей подписанной копии по п. 9.6 и приложению A; эта форма не заменяет мою подпись.'
+  Signature p.10:
+    title_ru: Подпись, с. 10
+  Date p.10:
+    title_ru: Дата, с. 10
+  Signature p.19:
+    title_ru: Подпись, с. 19
+  Date p.19:
+    title_ru: Дата, с. 19
+  Signature p.22:
+    title_ru: Подпись, с. 22
+  Date p.22:
+    title_ru: Дата, с. 22
+  Signature p.23:
+    title_ru: Подпись, с. 23
+  Date p.23:
+    title_ru: Дата, с. 23
+  Signature p.20:
+    title_ru: Подпись, с. 20
+  Date p.20:
+    title_ru: Дата, с. 20
+  Agreement date (e.g. 25 November 2026):
+    title_ru: Дата договора (например, 25 November 2026)
+  Address (in Latin letters):
+    title_ru: Адрес (латиницей)
+    hint:
+      en: 'Full residential address in Latin letters: street, building, city, country.'
+      ru: Полный адрес латиницей.
+  Tax number (if any):
+    title_ru: Налоговый номер (если есть)
+    hint:
+      en: Your tax number, if you have one. Otherwise leave blank.
+      ru: ИНН или налоговый номер, если есть.
+  Start of your work on GANTZ (indicative):
+    title_ru: Начало работы над GANTZ (примерно)
+    hint:
+      en: Approximate date you started working on the project, e.g. 26 October 2026.
+      ru: Примерная дата начала работы.
+  Platform account email:
+    title_ru: Почта аккаунта на платформе
+    hint:
+      en: Email of your account on the Stanislavsky platform.
+      ru: Почта аккаунта на платформе.
+  Platform login:
+    title_ru: Логин на платформе
+    hint:
+      en: Your login on the platform (e.g. VTereshonok).
+      ru: Логин на платформе.
+  Phone:
+    title_ru: Телефон
+    hint:
+      en: Phone with country code.
+      ru: Телефон с кодом страны.
+  City of access in Germany:
+    title_ru: Город доступа в Германии
+    hint:
+      en: City in Germany from which you access the platform, if any.
+      ru: Город в Германии.
+  City of access in Russia:
+    title_ru: Город доступа в России
+    hint:
+      en: City in Russia from which you access the platform, if any.
+      ru: Город в России.
+  Access to the platform since:
+    title_ru: Доступ к платформе с
+    hint:
+      en: Date of your first access to the platform, approximately.
+      ru: Дата первого входа, примерно.
+  Signature — NDA:
+    title_ru: Подпись — NDA
+  Date — NDA:
+    title_ru: Дата — NDA
+  Signature — Certificate:
+    title_ru: Подпись — сертификат
+  Date — Certificate:
+    title_ru: Дата — сертификат
+  Signature — Exhibit D:
+    title_ru: Подпись — Exhibit D
+  Date — Exhibit D:
+    title_ru: Дата — Exhibit D
+  NDA date (day and month, e.g. 25 November):
+    title_ru: Дата NDA (день и месяц, например, 25 November)
+  I agree to sign this Agreement electronically:
+    title_ru: Согласен(на) подписать договор электронно
+  I have reviewed the signed Agreement and want to send it:
+    title_ru: Я проверил(а) подписанный договор и хочу его отправить
+  I confirm the uploaded file is this Agreement signed by me:
+    title_ru: 'Подтверждаю: загружен этот договор с моей подписью'
+templates:
+  1:
+    name: NDA Accumulator
+  3:
+    name: NDA Puma
+  5:
+    name: NDA Accumulator - Lobodin Artem
+    name_ru: NDA Accumulator — Лободин Артём
+  6:
+    name: NDA Accumulator - Ionov Aleksei
+    name_ru: NDA Accumulator — Ионов Алексей
+  7:
+    name: NDA ALL3 (hand-signed)
+    name_ru: NDA ALL3 (подпись от руки)
+    completed_body:
+      en: 'We have received your signed file. Saccade Media House will countersign the Agreement by hand and send you the signed counterpart. Questions: legal@saccadeproduction.com.'
+      ru: Подписанный файл получен. Saccade Media House подпишет договор со своей стороны от руки и пришлёт вам подписанный экземпляр. Вопросы — legal@saccadeproduction.com.
+  38:
+    name: NDA Gantz
+  39:
+    name: Agreement Gantz - Khegai Sofia (SK-01)
+    name_ru: Договор Gantz — Хегай София (SK-01)
+    fields:
+      Electronic signature consent:
+        hint:
+          en: |-
+            **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter or upload in this form (name, status, address, tax ID, email, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+            We use them to conclude this Agreement, perform it and keep proof of it. The legal basis is that this is necessary to conclude and perform the Agreement with you (if you sign for an entity, our legitimate interest in concluding it with that entity), and our legitimate interest in keeping proof of it and in establishing, exercising or defending legal claims. You are not legally required to provide them, but without the required fields the Agreement cannot be signed.
+
+            The data is stored for us by Hetzner on our server in Germany and on Google Drive: in backups encrypted with our key before upload, which Google cannot read, and as copies of the signed Agreement and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us.
+
+            Apart from these providers, we disclose it only to the Affiliate that co-signs this Agreement, if any, to our legal and accounting advisers and, where needed to prove or enforce this Agreement, to the Client and Affiliates it protects, courts or authorities.
+
+            We keep it while this Agreement is in force and afterwards for as long as claims under it can be brought.
+
+            You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what we still need to perform this Agreement or to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+
+            I agree to sign this Agreement electronically. I confirm that I am the person named in it or am authorised to sign for that person, and that I am signing through an email address that belongs to me and that only I control. I agree that my electronic signature has the same legal effect as my handwritten signature. Without this box ticked, the Agreement cannot be signed.
+          ru: |-
+            Перевод для удобства: договор составлен на английском (п. 9.6); при расхождении этого перевода с английским текстом действует английский.
+
+            **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите или загружаете в эту форму (имя, статус, адрес, налоговый номер, почта, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+            Они нужны, чтобы заключить и исполнять этот договор и хранить доказательство договора. Правовое основание — это необходимо, чтобы заключить и исполнять договор с вами (если подписываете за компанию — наш законный интерес заключить его с ней), и наш законный интерес хранить доказательство договора и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей договор не подписать.
+
+            Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске: в резервных копиях, зашифрованных нашим ключом до загрузки (их Google прочитать не может), и как копии подписанного договора и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет.
+
+            Кроме этих провайдеров, передаём данные только аффилированному лицу, которое тоже подписывает договор (если есть), нашим юристам и бухгалтерам, а когда нужно доказать договор или добиться его исполнения, — клиенту и нашим аффилированным лицам, которых защищает договор, суду или властям.
+
+            Храним, пока действует договор, и после — пока по нему можно предъявить требования.
+
+            Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно для исполнения договора или для требований по нему и защиты от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+
+            Перевод для удобства (действует английский текст): соглашаюсь подписать договор электронно; подтверждаю, что я — лицо, указанное в договоре, или вправе подписать за него и что подписываю через свою почту, которая принадлежит мне и которой управляю только я; соглашаюсь, что моя электронная подпись имеет ту же силу, что подпись от руки. Без этой галочки подписать нельзя.
+  40:
+    name: NDA Gantz - Tereshonok Victoria (+ certificate, Exhibit D, Elen)
+    name_ru: NDA Gantz — Терешонок Виктория (+ сертификат, Exhibit D, Элен)
+    fields:
+      Email:
+        hint:
+          en: Email for notices under the Agreement.
+          ru: Почта для уведомлений.
+      Electronic signature consent:
+        hint:
+          en: |-
+            **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter or upload in this form (name, status, address, tax ID, email, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+            We use them to conclude this Agreement, perform it and keep proof of it. The legal basis is that this is necessary to conclude and perform the Agreement with you (if you sign for an entity, our legitimate interest in concluding it with that entity), and our legitimate interest in keeping proof of it and in establishing, exercising or defending legal claims. You are not legally required to provide them, but without the required fields the Agreement cannot be signed.
+
+            The data is stored for us by Hetzner on our server in Germany and on Google Drive: in backups encrypted with our key before upload, which Google cannot read, and as copies of the signed Agreement and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us.
+
+            Apart from these providers, we disclose it only to the Affiliate that co-signs this Agreement, if any, to our legal and accounting advisers and, where needed to prove or enforce this Agreement, to the Client and Affiliates it protects, courts or authorities.
+
+            We keep it while this Agreement is in force and afterwards for as long as claims under it can be brought.
+
+            You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what we still need to perform this Agreement or to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+
+            I agree to sign this Agreement electronically. I confirm that I am the person named in it or am authorised to sign for that person, and that I am signing through an email address that belongs to me and that only I control. I agree that my electronic signature has the same legal effect as my handwritten signature. Without this box ticked, the Agreement cannot be signed.
+          ru: |-
+            Перевод для удобства: договор составлен на английском (п. 9.6); при расхождении этого перевода с английским текстом действует английский.
+
+            **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите или загружаете в эту форму (имя, статус, адрес, налоговый номер, почта, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+            Они нужны, чтобы заключить и исполнять этот договор и хранить доказательство договора. Правовое основание — это необходимо, чтобы заключить и исполнять договор с вами (если подписываете за компанию — наш законный интерес заключить его с ней), и наш законный интерес хранить доказательство договора и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей договор не подписать.
+
+            Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске: в резервных копиях, зашифрованных нашим ключом до загрузки (их Google прочитать не может), и как копии подписанного договора и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет.
+
+            Кроме этих провайдеров, передаём данные только аффилированному лицу, которое тоже подписывает договор (если есть), нашим юристам и бухгалтерам, а когда нужно доказать договор или добиться его исполнения, — клиенту и нашим аффилированным лицам, которых защищает договор, суду или властям.
+
+            Храним, пока действует договор, и после — пока по нему можно предъявить требования.
+
+            Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно для исполнения договора или для требований по нему и защиты от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+
+            Перевод для удобства (действует английский текст): соглашаюсь подписать договор электронно; подтверждаю, что я — лицо, указанное в договоре, или вправе подписать за него и что подписываю через свою почту, которая принадлежит мне и которой управляю только я; соглашаюсь, что моя электронная подпись имеет ту же силу, что подпись от руки. Без этой галочки подписать нельзя.

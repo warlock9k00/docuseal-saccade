@@ -62,8 +62,8 @@
       browser_privacy_settings_block_canvas: 'Настройки приватности браузера не дают рисовать подпись. Откройте форму в другом браузере или на другом устройстве.',
       wait_countdown_seconds: 'Подождите {countdown} с', enter_screen_reader_mode: 'Режим для экранного диктора'
     }.to_json) %>;
-    var OPTIONS_RU = <%= raw SaccadeI18n::OPTIONS_RU.to_json %>;
-    var NAMES_RU = <%= raw SaccadeI18n::NAMES_RU.to_json %>;
+    var OPTIONS_RU = <%= raw SaccadeI18n.options_ru.to_json %>;
+    var NAMES_RU = <%= raw SaccadeI18n.names_ru.to_json %>;
     // document name in server-rendered headings (header h1, start / completed screens): static HTML, safe to rewrite
     function applyNames () {
       if (lang !== 'ru') return;

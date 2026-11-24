@@ -5,12 +5,13 @@
 #  - Rails locale :ru (texts in config/locales/saccade_ru.yml, mounted), fallback :en;
 #  - signer controllers (start_form*, submit_form*, submissions_preview) take the language from cookie saccade_lang
 #    (the EN/RU switch), else Accept-Language ru -> ru, else English. Admin pages are untouched (account locale, English);
-#  - SaccadeI18n.localize_fields: step titles in Russian (FIELD_TITLES_RU, or field key "title_ru") and only the
-#    paragraphs of the chosen language in descriptions; used by submit_form/_submission_form.html.erb (override);
+#  - ALL texts of the signing form (step hints, Russian step titles, option labels, document names, completion screen)
+#    come from ONE file, config/saccade_texts.yml, re-read when it changes (no restart). The texts stored in the
+#    templates are only a fallback for fields the file does not know. Used by submit_form/_submission_form.html.erb
+#    and shared/_saccade_lang.html.erb;
 #  - the Vue form's own strings (Type here..., Next, Complete, Draw/Type/Upload...) in Russian: VUE_RU in
 #    shared/_saccade_lang.html.erb, set as the form's i18n prop after mount.
-# New field name in a template -> add it to FIELD_TITLES_RU (or set "title_ru" on the field), otherwise the step title stays
-# English in RU mode. Reports of untranslated names: SaccadeI18n.missing_titles.
+# Check: SaccadeI18n.audit (run by `docs/infra/ds texts`).
 
 Rails.application.config.after_initialize do
   I18n.available_locales = (I18n.available_locales + [:ru]).uniq
@@ -20,77 +21,35 @@ end
 
 module SaccadeI18n
   SIGNER_CONTROLLERS = /\A(start_form|submit_form|submissions_preview|submissions_download)/
-
-  FIELD_TITLES_RU = {
-    'Full name (as in passport, Latin)' => 'Полное имя (как в паспорте, латиницей)',
-    'Status' => 'Статус',
-    'Trade name or entity name' => 'Название ИП или компании',
-    'Address' => 'Адрес',
-    'Address (in Latin letters)' => 'Адрес (латиницей)',
-    'Tax ID' => 'Налоговый номер',
-    'Tax number (if any)' => 'Налоговый номер (если есть)',
-    'Email' => 'Почта',
-    'Phone' => 'Телефон',
-    'Electronic signature consent' => 'Согласие на электронную подпись',
-    'I agree to sign this Agreement electronically' => 'Согласен(на) подписать договор электронно',
-    'Signatory full name' => 'Имя подписанта',
-    'Capacity, if signing for an entity' => 'Должность, если подписываете за компанию',
-    'Recipient signature' => 'Подпись',
-    'Recipient date' => 'Дата',
-    'Review before sending' => 'Проверка перед отправкой',
-    'I have reviewed the signed Agreement and want to send it' => 'Я проверил(а) подписанный договор и хочу его отправить',
-    'Agreement No.' => 'Номер договора',
-    'Company signature' => 'Подпись компании',
-    'Company date' => 'Дата (компания)',
-    'Affiliate signature (Sec. 9.7)' => 'Подпись аффилированного лица (п. 9.7)',
-    'Affiliate date' => 'Дата (аффилированное лицо)',
-    'Hand-signed NDA (scan)' => 'NDA, подписанное от руки (скан)',
-    'Hand-signed copy confirmation' => 'Подтверждение подписанной копии',
-    'I confirm the uploaded file is this Agreement signed by me' => 'Подтверждаю: загружен этот договор с моей подписью',
-    'Agreement date (e.g. 25 November 2026)' => 'Дата договора (например, 25 November 2026)',
-    'NDA date (day and month, e.g. 25 November)' => 'Дата NDA (день и месяц, например, 25 November)',
-    'Start of your work on GANTZ (indicative)' => 'Начало работы над GANTZ (примерно)',
-    'Platform account email' => 'Почта аккаунта на платформе',
-    'Platform login' => 'Логин на платформе',
-    'City of access in Germany' => 'Город доступа в Германии',
-    'City of access in Russia' => 'Город доступа в России',
-    'Access to the platform since' => 'Доступ к платформе с',
-    'Signature — NDA' => 'Подпись — NDA',
-    'Date — NDA' => 'Дата — NDA',
-    'Signature — Certificate' => 'Подпись — сертификат',
-    'Date — Certificate' => 'Дата — сертификат',
-    'Signature — Exhibit D' => 'Подпись — Exhibit D',
-    'Date — Exhibit D' => 'Дата — Exhibit D'
-  }.freeze
-
-  # "Signature p.10" / "Date p.10" (agreement pages)
-  PATTERNS_RU = [
-    [/\ASignature p\.\s*(\d+)\z/, 'Подпись, с. \1'],
-    [/\ADate p\.\s*(\d+)\z/, 'Дата, с. \1']
-  ].freeze
-
-  # radio / select option labels shown to the signer; the stored value stays English (it goes into the English document)
-  OPTIONS_RU = {
-    'Individual' => 'Физлицо',
-    'Sole proprietor' => 'ИП',
-    'Entity' => 'Компания'
-  }.freeze
-
-  # document names shown to the signer (header, start/completed screens, browser tab); project and brand names stay as they are
-  NAMES_RU = {
-    'NDA Gantz - Tereshonok Victoria (+ certificate, Exhibit D, Elen)' => 'NDA Gantz — Терешонок Виктория (+ сертификат, Exhibit D, Элен)',
-    'Agreement Gantz - Khegai Sofia (SK-01)' => 'Договор Gantz — Хегай София (SK-01)',
-    'NDA Accumulator - Lobodin Artem' => 'NDA Accumulator — Лободин Артём',
-    'NDA Accumulator - Ionov Aleksei' => 'NDA Accumulator — Ионов Алексей',
-    'NDA ALL3 (hand-signed)' => 'NDA ALL3 (подпись от руки)',
-    'TEST - ' => 'ТЕСТ — ',
-    ' (check 21.11)' => ' (проверка 21.11)'
-  }.freeze
-
+  TEXTS_PATH = Rails.root.join('config/saccade_texts.yml').to_s
   CYR = /[А-Яа-яЁё]/
   LAT = /[A-Za-z]/
+  # Latin words allowed inside Russian text (proper names, document labels)
+  LATIN_OK = /Saccade|Media|House|Inc|GANTZ|Gantz|NDA|Exhibit|ALL3|Accumulator|Puma|Hetzner|Google|Spacemail|DocuSeal|PDF|IP|SK-01|Recipient|Latin|\b[A-D]\b|legal@\S+|https?:\/\/\S+|\]\([^)]*\)/
 
   module_function
+
+  # ---- texts file (cached by mtime) ----
+  def texts
+    m = File.mtime(TEXTS_PATH)
+    return @texts if @texts && @texts_mtime == m
+
+    data = YAML.safe_load_file(TEXTS_PATH, permitted_classes: [], aliases: false) || {}
+    data['templates'] = (data['templates'] || {}).transform_keys(&:to_i)
+    @texts_mtime = m
+    @texts = data
+  rescue Errno::ENOENT, Psych::Exception => e
+    Rails.logger.error("[saccade_texts] #{e.class}: #{e.message}") # fail loud in the log, keep the templates' own texts
+    @texts || { 'fields' => {}, 'templates' => {} }
+  end
+
+  def options_ru = texts['options_ru'] || {}
+
+  # template name -> Russian name, plus generic parts (test copies)
+  def names_ru
+    (texts['templates'] || {}).values.each_with_object({}) { |t, h| h[t['name']] = t['name_ru'] if t['name'] && t['name_ru'] }
+                              .merge(texts['name_parts_ru'] || {})
+  end
 
   def lang_from(cookies, request)
     l = cookies[:saccade_lang].to_s
@@ -101,16 +60,19 @@ module SaccadeI18n
 
   def title_ru(text)
     return nil if text.blank?
-    return FIELD_TITLES_RU[text] if FIELD_TITLES_RU.key?(text)
 
-    PATTERNS_RU.each { |re, sub| return text.sub(re, sub) if text.match?(re) }
+    t = texts.dig('fields', text, 'title_ru')
+    return t if t.present?
+
+    (texts['title_patterns_ru'] || {}).each { |re, sub| r = Regexp.new(re); return text.sub(r, sub) if text.match?(r) }
     nil
   end
 
   def doc_name(name, lang)
     return name if lang != 'ru' || name.blank?
 
-    NAMES_RU.keys.sort_by { |k| -k.length }.reduce(name.dup) { |n, k| n.gsub(k, NAMES_RU[k]) }
+    map = names_ru
+    map.keys.sort_by { |k| -k.length }.reduce(name.dup) { |n, k| n.gsub(k, map[k]) }
   end
 
   def para_lang(text)
@@ -118,7 +80,7 @@ module SaccadeI18n
     plain.match?(CYR) ? 'ru' : (plain.match?(LAT) ? 'en' : nil)
   end
 
-  # keep the paragraphs of one language when the description has both (paragraphs are separated by a blank line)
+  # legacy: a stored description with both languages -> the paragraphs of one language
   def description_for(desc, lang)
     return desc if desc.blank?
 
@@ -129,10 +91,29 @@ module SaccadeI18n
     paras.each_with_index.select { |_, i| langs[i].nil? || langs[i] == lang }.map(&:first).join("\n\n")
   end
 
-  def localize_fields(fields, lang)
+  # entry of the texts file for this field (template override first); :none = the file does not know the field
+  def hint_entry(name, template_id)
+    over = texts.dig('templates', template_id, 'fields')
+    return over[name] || {} if over.is_a?(Hash) && over.key?(name)
+
+    texts.dig('fields', name) || :none
+  end
+
+  def pick(h, lang)
+    return nil unless h.is_a?(Hash)
+
+    h[lang].presence || h['en'].presence || h['ru'].presence
+  end
+
+  def localize_fields(fields, lang, template_id = nil)
     fields.map do |f|
       f = f.dup
-      f['description'] = description_for(f['description'], lang) if f['description'].present?
+      e = hint_entry(f['name'], template_id)
+      if e == :none || !e.key?('hint')
+        f['description'] = description_for(f['description'], lang) if f['description'].present?
+      else
+        f['description'] = pick(e['hint'], lang).to_s
+      end
       if lang == 'ru'
         ru = f['title_ru'].presence || title_ru(f['title'].presence || f['name'])
         f['title'] = ru if ru
@@ -141,18 +122,48 @@ module SaccadeI18n
     end
   end
 
-  COMPLETED_TITLES_RU = { 'Thank you!' => 'Спасибо!' }.freeze
-
-  # completion screen of the Vue form: title in the chosen language, body paragraphs of that language only
-  def localize_completed(msg, lang)
+  # completion screen of the Vue form
+  def localize_completed(msg, lang, template_id = nil)
     msg = msg.to_h.dup
-    msg['title'] = COMPLETED_TITLES_RU.fetch(msg['title'], msg['title']) if lang == 'ru' && msg['title'].present?
-    msg['body'] = description_for(msg['body'], lang) if msg['body'].present?
+    c = texts['completed'] || {}
+    body = texts.dig('templates', template_id, 'completed_body') || c['body']
+    msg['title'] = pick(c['title'], lang) || msg['title'] if c['title']
+    msg['body'] = body ? pick(body, lang) : description_for(msg['body'], lang)
     msg
   end
 
   def missing_titles(fields)
     fields.filter_map { |f| n = f['title'].presence || f['name']; n if n.present? && f['title_ru'].blank? && title_ru(n).nil? }
+  end
+
+  # problems for `ds texts`: unknown fields, missing translations, Latin inside Russian text
+  def audit
+    out = []
+    t = texts
+    tpls = Template.where(archived_at: nil).where.not(folder_id: TemplateFolder.where(name: 'TEST audit').select(:id))
+    tpls.each do |tpl|
+      tpl.fields.each do |f|
+        out << "шаблон #{tpl.id}: поле «#{f['name']}» — нет в saccade_texts.yml" unless t['fields']&.key?(f['name'])
+        missing_titles([f]).each { |n| out << "шаблон #{tpl.id}: нет title_ru для «#{n}»" }
+      end
+      out << "шаблон #{tpl.id} «#{tpl.name}»: нет в templates" unless t['templates']&.key?(tpl.id)
+    end
+    check = lambda do |where, h|
+      next unless h.is_a?(Hash)
+
+      out << "#{where}: нет en" if h['en'].blank?
+      out << "#{where}: нет ru" if h['ru'].blank?
+      rest = h['ru'].to_s.gsub(LATIN_OK, '')
+      out << "#{where}: латиница в русском — #{rest.scan(/[A-Za-z][A-Za-z.\-]+/).uniq.first(5).join(', ')}" if rest.match?(/[A-Za-z]{2,}/)
+      out << "#{where}: кириллица в английском" if h['en'].to_s.match?(CYR)
+    end
+    (t['fields'] || {}).each { |n, e| check.("поле «#{n}»", e && e['hint']) }
+    (t['templates'] || {}).each do |id, e|
+      (e['fields'] || {}).each { |n, x| check.("шаблон #{id}, поле «#{n}»", x && x['hint']) }
+      check.("шаблон #{id}, экран после подписи", e['completed_body'])
+    end
+    check.('экран после подписи', t.dig('completed', 'body'))
+    out
   end
 end
 
