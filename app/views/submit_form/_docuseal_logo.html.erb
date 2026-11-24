@@ -32,6 +32,8 @@
     .shdr-brand{display:flex;align-items:center;gap:8px;flex-shrink:0}
     .shdr-sac{display:flex;align-items:center;gap:7px}
     .shdr-logo{display:block;height:24px;width:auto;max-width:none}
+    <%# 24.11 (Sasha): on a phone the header shows only the Saccade dots mark (/saccade-mark.svg), the full logo from 768 px %>
+    .shdr-mark{display:none;height:26px;width:auto;max-width:none}
     .shdr-bar{width:1px;height:18px;background:currentColor;opacity:.18;flex-shrink:0}
     .shdr-ds{display:flex;align-items:center;gap:5px;opacity:.6;flex-shrink:0}
     .shdr-dst{font-size:13px;font-weight:600}
@@ -39,10 +41,15 @@
       html.shdr #signing_form_header{height:52px;padding:0 12px!important;gap:10px}
       html.shdr #signing_form_header h1{font-size:16px!important}
       .shdr-word,.shdr-dst,.shdr-bar2,.shdr-dl{display:none!important}
-      .shdr-logo{height:14px}
+      .shdr-logo{display:none!important}
+      .shdr-mark{display:block}
       html.shdr #decline_button{padding:0 10px!important}
     }
     @media (min-width:768px){.shdr-xi{display:none}}
+    <%# 24.11: DocuSeal's dark label over the active field ("Full name (as in passport…)") runs past the page edge when the field
+        is on the right; on a phone the page then got wider than the screen (429 px of 390) and the header's right end went off-screen.
+        Clip it at the PDF page edge, sideways only %>
+    [id^="page-"]{overflow-x:clip}
   </style>
   <script nonce="<%= content_security_policy_nonce %>">
   (function () {
@@ -64,6 +71,7 @@
       var brand = el('span', 'shdr-brand'), s = el('span', 'shdr-sac');
       s.setAttribute('role', 'img'); s.setAttribute('aria-label', 'Saccade Media House');
       var w = logo.cloneNode(true); w.removeAttribute('style'); w.setAttribute('class', 'shdr-logo'); s.appendChild(w);
+      var m = el('img', 'shdr-mark'); m.src = '/saccade-mark.svg'; m.alt = ''; m.setAttribute('aria-hidden', 'true'); m.width = 16; m.height = 26; s.appendChild(m);
       var a = el('a', 'shdr-ds'); a.href = ds.getAttribute('href'); a.title = 'DocuSeal'; a.setAttribute('aria-label', 'DocuSeal');
       a.appendChild(sized(ds.querySelector('svg'), 14, 1));
       var dt = el('span', 'shdr-dst'); dt.textContent = 'DocuSeal'; a.appendChild(dt);
@@ -243,6 +251,9 @@
           (s.todo.length ? '<span class="snav-pill">' + T(s.todo.length + ' left', 'ещё ' + s.todo.length) + '</span>' : '<span class="snav-pill" style="background:' + DONE + '">' + CHECK + '</span>') +
           '<span class="snav-nx">' + nx + '</span><span class="snav-ch">' + (open ? '&#x2303;' : '&#x2304;') + '</span></button>' +
           (open ? '<div class="snav-dd">' + head + list + '</div>' : '') + '</nav>';
+        // 24.11 (Sasha): the fixed bar covered the top of page 1; the header's bottom margin (CSS below) reserves its height
+        var tg = root.querySelector('.snav-tg');
+        if (tg) document.documentElement.style.setProperty('--snav-h', tg.offsetHeight + 'px');
       }
     }
 
@@ -276,6 +287,9 @@
         '#form_container>div{overflow-y:auto;min-height:0;overscroll-behavior:contain}',
         // with the sticky header A and the navigator bar under it, keep the step window below the bar
         'body:has(.snav-top) #form_container{max-height:calc(100vh - 124px);max-height:calc(100dvh - 124px)}',
+        // 24.11 (Sasha: "the menu covers the header"): at the top of the page the document starts below the bar, not under it
+        // (bar = header bottom + 12 px, its height --snav-h, then 8 px)
+        'html.shdr body:has(.snav-top) #signing_form_header{margin-bottom:calc(var(--snav-h, 40px) + 20px)!important}',
         '.steps-progress button[data-snav]{background:#fff!important;border-color:' + ACC + '!important}',
         '.steps-progress button[data-snav=done]{background:' + DONE + '!important;border-color:' + DONE + '!important}',
         '.steps-progress button[data-snav=next]{background:' + ACC + '!important}',
