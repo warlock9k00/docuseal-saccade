@@ -2,8 +2,11 @@
     Russian, the choice is remembered). Our texts carry both languages: an English paragraph, an empty line, a Russian one
     (step descriptions, the completion message, Policy Links parts separated by " · "). This script shows the paragraphs of
     the chosen language; a paragraph with any Cyrillic letter is Russian, with Latin letters only English, without letters
-    shown in both. Without the script both languages stay visible. DocuSeal's own buttons and labels are not translated
-    (3.3.8 has no Russian). The choice goes to the cookie saccade_lang, which config/initializers/saccade_lang_event.rb
+    shown in both. Without the script both languages stay visible.
+    2026-11-24 (Sasha: "при английском всё на английском, при русском — на русском"): the server decides the language
+    (config/initializers/saccade_i18n.rb: cookie, else Accept-Language) and renders Rails texts, step titles and descriptions
+    in it; this script takes the same language, gives the Vue form its Russian strings (VUE_RU, as the form's i18n prop) and
+    shows radio options in Russian (the stored value stays English). Switching EN/RU saves the cookie and reloads the page. The choice goes to the cookie saccade_lang, which config/initializers/saccade_lang_event.rb
     writes into the submission events, and to localStorage. Rendered by submit_form/_docuseal_logo and
     start_form/_docuseal_logo. Vue elements are never rewritten: next to DocuSeal's own text a span.slang-v with the chosen
     paragraphs is added and the original is hidden by CSS, so Vue keeps patching its own nodes.
@@ -17,15 +20,88 @@
 <script nonce="<%= content_security_policy_nonce %>">
   (function () {
     if (window.SaccadeLang) return;
-    var KEY = 'saccade_lang', subs = [], segs = [], lang = read(), queued = false;
-
-    function read () {
-      var m = document.cookie.match(/(?:^|;\s*)saccade_lang=(en|ru)(?:;|$)/);
-      if (m) return m[1];
-      try { var s = localStorage.getItem(KEY); if (s === 'en' || s === 'ru') return s; } catch (e) {}
-      var n = (navigator.languages && navigator.languages[0]) || navigator.language || '';
-      return /^ru\b/i.test(n) ? 'ru' : 'en';
+    var KEY = 'saccade_lang', subs = [], segs = [], lang = '<%= SaccadeI18n.lang_from(cookies, request) %>', queued = false;
+    var VUE_RU = <%= raw({
+      step: 'Шаг', form_progress: 'Ход заполнения', close: 'Закрыть', uploaded_files: 'Загруженные файлы',
+      signature_drawing_area: 'Поле для подписи. Нарисуйте подпись мышью или пальцем.',
+      initials_drawing_area: 'Поле для инициалов. Нарисуйте их мышью или пальцем.', kba: 'KBA',
+      please_upload_an_image_file: 'Загрузите изображение', must_be_characters_length: 'Нужно {number} символов',
+      must_be_valid_ssn: 'Нужен корректный SSN (XXX-XX-XXXX)', must_be_valid_ein: 'Нужен корректный EIN (XX-XXXXXXX)',
+      must_be_valid_email: 'Нужен корректный адрес почты', must_be_valid_url: 'Нужна ссылка, начинающаяся с http:// или https://',
+      must_be_valid_zip: 'Нужен корректный индекс', must_be_valid_iban: 'Нужен корректный IBAN',
+      must_contain_numbers_only: 'Только цифры', must_contain_letters_only: 'Только буквы',
+      complete_all_required_fields_to_proceed_with_identity_verification: 'Заполните все обязательные поля, чтобы пройти проверку личности.',
+      verify_id: 'Проверить личность', identity_verification: 'Проверка личности', complete: 'Завершить',
+      fill_all_required_fields_to_complete: 'Заполните все обязательные поля, чтобы завершить', sign_and_complete: 'Подписать и завершить',
+      text: 'Текст', by_clicking_you_agree_to_the: 'Нажимая «{button}», вы соглашаетесь с',
+      electronic_signature_disclosure: 'условиями электронной подписи', esignature_disclosure: 'условиями электронной подписи',
+      signature: 'Подпись', initials: 'Инициалы', sign_on_the_touchscreen: 'Распишитесь на экране', approved: 'Одобрено',
+      reviewed: 'Проверено', other: 'Другое', authored_by_me: 'Автор — я', invite: 'Пригласить', email: 'Почта',
+      approved_by: 'Одобрил(а)', reviewed_by: 'Проверил(а)', authored_by: 'Автор', select_a_reason: 'Выберите причину',
+      scan_the_qr_code_with_the_camera_app_to_open_the_form_on_mobile_and_draw_your_signature: 'Отсканируйте QR-код камерой, чтобы открыть форму на телефоне и нарисовать подпись',
+      date: 'Дата', number: 'Число', value_is_invalid: 'Неверное значение', verification_code_is_invalid: 'Неверный код',
+      already_paid: 'Уже оплачено', image: 'Изображение', pay: 'Оплатить', take_photo: 'Сделать фото',
+      number_phone_is_invalid: 'Номер {number} неверный', file: 'Файл', digitally_signed_by: 'Подписано электронно:',
+      reason: 'Причина', select: 'Выбрать', checkbox: 'Флажок', multiple: 'Несколько', radio: 'Выбор', cells: 'Ячейки',
+      stamp: 'Печать', minimize: 'Свернуть', payment: 'Оплата', phone: 'Телефон', start_now: 'Начать', continue: 'Продолжить',
+      sign_now: 'Подписать', type_here_: 'Введите…', optional: 'необязательно', option: 'Вариант', appears_on: 'Встречается на',
+      page: 'Страница', select_your_option: 'Выберите вариант', complete_hightlighted_checkboxes_and_click: 'Отметьте выделенные флажки и нажмите',
+      submit: 'отправить', next: 'далее', click_to_upload: 'Нажмите, чтобы загрузить', or_drag_and_drop_files: 'или перетащите файлы',
+      send_copy_via_email: 'Отправить копию на почту', download: 'Скачать', clear: 'Очистить', redraw: 'Перерисовать',
+      draw_initials: 'Нарисовать инициалы', type_signature_here: 'Напишите подпись здесь', type_initial_here: 'Напишите инициалы здесь',
+      form_has_been_completed: 'Форма заполнена!', document_has_been_signed: 'Документ подписан!', documents_have_been_signed: 'Документы подписаны!',
+      create_a_free_account: 'Создать бесплатный аккаунт', powered_by: 'Работает на', please_check_the_box_to_continue: 'Отметьте флажок, чтобы продолжить.',
+      open_source_documents_software: 'программе с открытым кодом', verified_phone_number: 'Подтвердите телефон', country_code: 'Код страны',
+      use_international_format: 'Международный формат: +1xxx', six_digits_code: 'Код из 6 цифр', change_phone_number: 'Изменить номер',
+      sending: 'Отправка…', resend_code: 'Отправить код ещё раз', verification_code_has_been_resent: 'Код отправлен ещё раз по SMS',
+      please_fill_all_required_fields: 'Заполните все обязательные поля', set_today: 'Сегодня', toggle_multiline_text: 'Несколько строк',
+      draw_signature: 'Нарисовать подпись', type_initial: 'Напечатать инициалы', draw: 'Нарисовать', type: 'Напечатать',
+      type_text: 'Введите текст', email_has_been_sent: 'Письмо отправлено', processing: 'Обработка', pay_with_stripe: 'Оплатить через Stripe',
+      pay_with_paypal: 'Оплатить через PayPal', reupload: 'Загрузить заново', upload: 'Загрузить', files: 'Файлы',
+      signature_is_too_small_or_simple_please_redraw: 'Подпись слишком маленькая или простая. Нарисуйте ещё раз.',
+      browser_privacy_settings_block_canvas: 'Настройки приватности браузера не дают рисовать подпись. Откройте форму в другом браузере или на другом устройстве.',
+      wait_countdown_seconds: 'Подождите {countdown} с', enter_screen_reader_mode: 'Режим для экранного диктора'
+    }.to_json) %>;
+    var OPTIONS_RU = <%= raw SaccadeI18n::OPTIONS_RU.to_json %>;
+    var NAMES_RU = <%= raw SaccadeI18n::NAMES_RU.to_json %>;
+    // document name in server-rendered headings (header h1, start / completed screens): static HTML, safe to rewrite
+    function applyNames () {
+      if (lang !== 'ru') return;
+      var keys = Object.keys(NAMES_RU).sort(function (a, b) { return b.length - a.length; });
+      document.querySelectorAll('#signing_form_header h1, p.text-lg.font-bold').forEach(function (h) {
+        if (h.__slangName === h.textContent) return;
+        var w = document.createTreeWalker(h, NodeFilter.SHOW_TEXT), n;
+        while ((n = w.nextNode())) {
+          var v = n.nodeValue;
+          keys.forEach(function (k) { v = v.split(k).join(NAMES_RU[k]); });
+          if (v !== n.nodeValue) n.nodeValue = v;
+        }
+        h.__slangName = h.textContent;
+      });
     }
+
+    // the Vue signing form: its strings come from the i18n prop (form.vue t()), set right after the form is mounted
+    function patchVue () {
+      if (lang !== 'ru') return;
+      document.querySelectorAll('submission-form').forEach(function (el) {
+        var c = el.appElem && el.appElem._vnode && el.appElem._vnode.component;
+        if (c && c.props && c.props.i18n !== VUE_RU) c.props.i18n = VUE_RU;
+      });
+    }
+    // radio options (form.vue: label.radio-label > input + span): a Russian span next to Vue's own span, which is hidden;
+    // the stored value stays English because it goes into the English document
+    function applyOptions () {
+      if (lang !== 'ru') return;
+      document.querySelectorAll('label.radio-label > span').forEach(function (sp) {
+        if (sp.classList.contains('slang-o') || sp.children.length) return;
+        var ru = OPTIONS_RU[sp.textContent.trim()], nx = sp.nextElementSibling;
+        if (!ru) { if (nx && nx.classList.contains('slang-o')) { nx.remove(); sp.style.display = ''; } return; }
+        if (nx && nx.classList.contains('slang-o')) { if (nx.textContent !== ru) nx.textContent = ru; return; }
+        var o = document.createElement('span'); o.className = sp.className + ' slang-o'; o.textContent = ru;
+        sp.style.display = 'none'; sp.parentNode.insertBefore(o, sp.nextSibling);
+      });
+    }
+    function read () { return lang; }
     function save () {
       document.cookie = KEY + '=' + lang + '; path=/; max-age=31536000; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
       try { localStorage.setItem(KEY, lang); } catch (e) {}
@@ -88,6 +164,7 @@
     function applyAll () {
       queued = false;
       try {
+        patchVue(); applyOptions(); applyNames();
         document.querySelectorAll('.field-description-text, .completed-form-message-body').forEach(applyBox);
         // Policy Links: submit_form/show (md:fixed block) and start_form/_policy
         document.querySelectorAll('div[class~="md:fixed"][class~="md:bottom-0"] > div, div.max-w-md.flex-wrap.gap-1.justify-center').forEach(function (c) {
@@ -110,8 +187,9 @@
       onChange: function (fn) { subs.push(fn); },
       set: function (l) {
         if ((l !== 'en' && l !== 'ru') || l === lang) return;
-        lang = l; save(); paintSegs(); applyAll();
-        subs.forEach(function (fn) { try { fn(lang); } catch (e) { if (window.console) console.warn('saccade lang', e); } });
+        lang = l; save(); paintSegs();
+        // server-rendered texts, step titles and the Vue form change only on a new render
+        location.reload();
       },
       seg: function () {
         var g = document.createElement('div');
@@ -131,5 +209,7 @@
     save();
     new MutationObserver(queue).observe(document.documentElement, { childList: true, subtree: true, characterData: true });
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyAll); else queue();
+    // set the Russian strings before the first paint of the form (upgrade + mount run synchronously in define)
+    if (window.customElements) customElements.whenDefined('submission-form').then(patchVue);
   })();
 </script>
