@@ -284,7 +284,11 @@
         // 21.11 (Sasha, ALL3): a long step text made the step window taller than the screen, its top with the minimize
         // button went off-screen and nothing could be closed. Cap the window, scroll the text inside it.
         '#form_container{display:flex;flex-direction:column;max-height:calc(100vh - 96px);max-height:calc(100dvh - 96px)}',
-        '#form_container>div{overflow-y:auto;min-height:0;overscroll-behavior:contain}',
+        // 24.11 (Sasha, phone: the step text scrolled sideways and was cut on the left): overflow-y:auto made overflow-x auto too,
+        // and DocuSeal's hidden tooltip next to the text field is ~50 px wider than the window. Vertical scrolling only.
+        '#form_container>div{overflow-y:auto;overflow-x:hidden;min-height:0;overscroll-behavior:contain}',
+        // the tooltip itself ("Toggle Multiline Text", centred over a button at the right edge): open it leftwards from the button
+        '#form_container .tooltip::before{left:auto!important;right:0!important;transform:none!important}',
         // with the sticky header A and the navigator bar under it, keep the step window below the bar
         'body:has(.snav-top) #form_container{max-height:calc(100vh - 124px);max-height:calc(100dvh - 124px)}',
         // 24.11 (Sasha: "the menu covers the header"): at the top of the page the document starts below the bar, not under it
