@@ -1,5 +1,5 @@
-<%# Saccade, 2026-11-24: DocuSeal mark hidden where the "Powered by DocuSeal" line is on the page. 2026-11-21: compact header "Saccade | DocuSeal" instead of the large DocuSeal logo. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade. The Saccade logo is its owner's trademark and is not licensed under AGPL. %>
-<div id="saccade-brand-row" class="flex justify-center items-center" style="gap:9px">
+<%# Saccade, 2026-11-24: brand row full width, logo flush left with the form (Sasha: no centring). DocuSeal mark hidden where the "Powered by DocuSeal" line is on the page. 2026-11-21: compact header "Saccade | DocuSeal" instead of the large DocuSeal logo. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade. The Saccade logo is its owner's trademark and is not licensed under AGPL. %>
+<div id="saccade-brand-row" class="flex justify-start items-center" style="gap:9px;width:100%">
   <span class="flex items-center" style="gap:9px" role="img" aria-label="Saccade Media House"><img src="/saccade-media-house-logo.png" alt="" aria-hidden="true" width="182" height="28" style="display:block;max-width:100%;height:auto"></span>
   <span class="sds-hide" aria-hidden="true" style="width:1px;height:20px;background:currentColor;opacity:.18;margin:0 4px"></span>
   <a href="/" class="sds-hide flex items-center opacity-70" style="gap:5px">
@@ -20,7 +20,7 @@
       var row = document.getElementById('saccade-brand-row');
       if (!row || !window.SaccadeLang || row.querySelector('.slang-seg')) return;
       var g = window.SaccadeLang.seg();
-      g.style.marginLeft = '6px';
+      g.style.marginLeft = 'auto'; // 2026-11-24: logo flush left with the form, EN|RU at the right edge
       row.appendChild(g);
     })();
   </script>
