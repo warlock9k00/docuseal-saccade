@@ -103,7 +103,7 @@
       var email = em.value, text = form.previousElementSibling;
       function say () {
         if (text && !text.querySelector('input')) text.innerHTML = T('We sent a 6-digit code to ', 'Мы отправили 6-значный код на ') +
-          '<b style="font-weight:600;overflow-wrap:anywhere">' + esc(email) + '</b>' + T('. Enter it below to continue.', '. Введите его ниже, чтобы продолжить.');
+          '<b style="font-weight:600;overflow-wrap:anywhere">' + esc(email) + '</b>.<br>' + T('Enter it below to continue.', 'Введите его ниже, чтобы продолжить.'); // 24.11 (Sasha): second sentence on its own line
       }
       var slot = row.firstElementChild;
       if (slot.textContent.trim()) {
