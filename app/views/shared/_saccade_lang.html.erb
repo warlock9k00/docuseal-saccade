@@ -70,14 +70,16 @@
       box.setAttribute('data-slang-on', '');
     }
 
-    // Policy Links is server HTML (MarkdownToHtml), safe to rewrite: keep the part of the chosen language and the links
+    // Policy Links is server HTML (MarkdownToHtml), safe to rewrite: keep the parts of the chosen language. 2026-11-24 (Sasha: no
+    // doubled EN/RU words): a link part goes by the language of its own text too, so "[Source code]" and "[Исходный код]" are
+    // separate parts and only one shows; a part without letters (bare URL) shows in both. Without JS everything stays visible.
     function applyPolicy (el) {
       if (!el.hasAttribute('data-slang-src')) {
         if (el.innerHTML.indexOf(' · ') < 0) return;
         el.setAttribute('data-slang-src', el.innerHTML);
       }
       var parts = el.getAttribute('data-slang-src').split(/\s·\s/);
-      var ls = parts.map(function (p) { return /<a\s/i.test(p) ? '' : langOf(p.replace(/<[^>]*>/g, '')); });
+      var ls = parts.map(function (p) { return langOf(p.replace(/<[^>]*>/g, '')); });
       if (ls.indexOf('en') < 0 || ls.indexOf('ru') < 0) return;
       var html = parts.filter(function (p, i) { return !ls[i] || ls[i] === lang; }).join(' · ');
       if (el.innerHTML !== html) el.innerHTML = html;
