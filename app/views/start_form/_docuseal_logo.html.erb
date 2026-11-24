@@ -138,6 +138,9 @@
 <script nonce="<%= content_security_policy_nonce %>">
   (function () {
     function run () {
+      // 24.11 (Sasha, "check everywhere"): the start screen e-mail field gets the address suggestion too
+      var mail = document.querySelector('input[type="email"][name="submitter[email]"]');
+      if (mail) { mail.setAttribute('autocomplete', 'email'); mail.setAttribute('autocapitalize', 'off'); mail.setAttribute('spellcheck', 'false'); }
       var input = document.querySelector('#code_form input[name*="one_time_code"]');
       if (!input) return;
       input.setAttribute('autocomplete', 'one-time-code');

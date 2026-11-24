@@ -96,6 +96,34 @@
     }
   })();
   </script>
+  <%# Saccade, 2026-11-24 (Sasha, "check everywhere" about phone keyboards): DocuSeal renders every text field as a plain text input.
+      Fields named like e-mail get the e-mail keyboard (@ and .) and the address suggestion; type stays "text" so DocuSeal's
+      own handling of the input is unchanged. Names/addresses are left alone: the form asks for Latin and a country, and
+      phone autofill would offer the contact card as is. %>
+  <script nonce="<%= content_security_policy_nonce %>">
+  (function () {
+    if (window.__saccadeKb) return;
+    window.__saccadeKb = true;
+    var mail = null;
+    function apply () {
+      var host = document.querySelector('submission-form');
+      if (!host) return;
+      if (!mail) {
+        mail = {};
+        try { JSON.parse(host.dataset.fields || '[]').forEach(function (f) { if (f.type === 'text' && /e-?mail|почт/i.test(f.name || '')) mail[f.uuid] = 1; }); } catch (e) {}
+      }
+      Object.keys(mail).forEach(function (u) {
+        var i = document.getElementById(u);
+        if (!i || i.tagName !== 'INPUT' || i.getAttribute('inputmode') === 'email') return;
+        i.setAttribute('inputmode', 'email'); i.setAttribute('autocomplete', 'email');
+        i.setAttribute('autocapitalize', 'off'); i.setAttribute('autocorrect', 'off'); i.setAttribute('spellcheck', 'false');
+      });
+    }
+    var mo = new MutationObserver(function () { try { apply(); } catch (e) {} });
+    function start () { apply(); mo.observe(document.body, { childList: true, subtree: true }); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+  })();
+  </script>
   <%# Saccade, 2026-11-21: field navigator ("B — list of fields", chosen by Sasha). Desktop with room on the left: a card with all
       fields, their page and progress; phone or narrow window: a bar under the header "N left · Next: …" that opens the list.
       A tap moves DocuSeal to that step through its own progress dots, so DocuSeal still does the saving and scrolling.
