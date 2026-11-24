@@ -1,8 +1,13 @@
 <%# Saccade, 2026-11-24: sign-off is just "Thanks," without the account name (Saccade Media House, Inc.): the Saccade Production signature
-    follows right below it (layouts/mailer.html.erb). The rest is DocuSeal 3.3.8 as is. Modification of DocuSeal 3.3.8 (AGPL-3.0);
+    follows right below it (layouts/mailer.html.erb). "Invited to Saccade Legal" (SACCADE_MAIL_FROM_NAME) instead of "<account> DocuSeal". The rest is DocuSeal 3.3.8 as is. Modification of DocuSeal 3.3.8 (AGPL-3.0);
     source: https://github.com/warlock9k00/docuseal-saccade. %>
 <p><%= @user.first_name.present? ? t('hello_name', name: @user.first_name) : t('hi_there') %>,</p>
+<% saccade_brand = ENV['SACCADE_MAIL_FROM_NAME'].to_s.delete('"').strip %>
+<% if saccade_brand.present? %>
+<p>You have been invited to <%= saccade_brand %>. Please sign up using the link below:</p>
+<% else %>
 <p><%= t('you_have_been_invited_to_account_name_product_name_please_sign_up_using_the_link_below_', account_name: @user.account.name, product_name: Docuseal.product_name) %></p>
+<% end %>
 <p><%= link_to t('sign_up'), invitation_url(reset_password_token: @token) %></p>
 <p><%= t('please_contact_us_by_replying_to_this_email_if_you_have_any_questions') %></p>
 <p>
