@@ -96,31 +96,53 @@
     }
   })();
   </script>
-  <%# Saccade, 2026-11-24 (Sasha, "check everywhere" about phone keyboards): DocuSeal renders every text field as a plain text input.
-      Fields named like e-mail get the e-mail keyboard (@ and .) and the address suggestion; type stays "text" so DocuSeal's
-      own handling of the input is unchanged. Names/addresses are left alone: the form asks for Latin and a country, and
-      phone autofill would offer the contact card as is. %>
+  <%# Saccade, 2026-11-24 (Sasha: "a normal phone keyboard on every screen, convenient for the kind of data"): DocuSeal renders
+      every text field as a plain text input with autocorrect and sentence capitals. By the field name: e-mail -> @ keyboard and
+      address suggestion; phone -> phone pad; names, address, city, company, capacity -> Capital Each Word, no autocorrect;
+      tax/registration/agreement numbers -> CAPITALS, no autocorrect; login -> no capitals, no autocorrect. Dates written as
+      text keep the normal keyboard. Type stays "text", so DocuSeal's own handling is unchanged. The keyboard language cannot be
+      set by a page (iOS keeps the last one). New field names in a template -> extend RULES. %>
   <script nonce="<%= content_security_policy_nonce %>">
   (function () {
     if (window.__saccadeKb) return;
     window.__saccadeKb = true;
-    var mail = null;
+    var OFF = { autocorrect: 'off', spellcheck: 'false' };
+    function x (a) { var o = {}; for (var k in OFF) o[k] = OFF[k]; for (k in a) o[k] = a[k]; return o; }
+    var RULES = [
+      [/e-?mail|почт/i, x({ inputmode: 'email', autocomplete: 'email', autocapitalize: 'off' })],
+      [/phone|телефон/i, x({ inputmode: 'tel', autocomplete: 'tel' })],
+      [/login|логин|username/i, x({ autocapitalize: 'off' })],
+      [/tax|registration|agreement no|номер|ИНН/i, x({ autocapitalize: 'characters' })],
+      [/name|address|city|capacity|имя|адрес|город|должност/i, x({ autocapitalize: 'words' })]
+    ];
+    var map = null;
     function apply () {
       var host = document.querySelector('submission-form');
       if (!host) return;
-      if (!mail) {
-        mail = {};
-        try { JSON.parse(host.dataset.fields || '[]').forEach(function (f) { if (f.type === 'text' && /e-?mail|почт/i.test(f.name || '')) mail[f.uuid] = 1; }); } catch (e) {}
+      if (!map) {
+        map = {};
+        try {
+          JSON.parse(host.dataset.fields || '[]').forEach(function (f) {
+            if (f.type !== 'text') return;
+            for (var i = 0; i < RULES.length; i++) if (RULES[i][0].test(f.name || '')) { map[f.uuid] = RULES[i][1]; return; }
+          });
+        } catch (e) {}
       }
-      Object.keys(mail).forEach(function (u) {
-        var i = document.getElementById(u);
-        if (!i || i.tagName !== 'INPUT' || i.getAttribute('inputmode') === 'email') return;
-        i.setAttribute('inputmode', 'email'); i.setAttribute('autocomplete', 'email');
-        i.setAttribute('autocapitalize', 'off'); i.setAttribute('autocorrect', 'off'); i.setAttribute('spellcheck', 'false');
+      // Vue may reuse one input for the next step's field (new id): strip what was set for the previous field
+      [].forEach.call(document.querySelectorAll('[data-skb]'), function (el) {
+        if (el.getAttribute('data-skb') === el.id) return;
+        ['inputmode', 'autocomplete', 'autocapitalize', 'autocorrect', 'spellcheck', 'data-skb'].forEach(function (k) { el.removeAttribute(k); });
+      });
+      Object.keys(map).forEach(function (u) {
+        var el = document.getElementById(u);
+        if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'TEXTAREA') || el.getAttribute('data-skb') === u) return;
+        var a = map[u];
+        for (var k in a) el.setAttribute(k, a[k]);
+        el.setAttribute('data-skb', u);
       });
     }
     var mo = new MutationObserver(function () { try { apply(); } catch (e) {} });
-    function start () { apply(); mo.observe(document.body, { childList: true, subtree: true }); }
+    function start () { apply(); mo.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['id'] }); }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
   })();
   </script>
