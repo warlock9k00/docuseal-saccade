@@ -1,4 +1,5 @@
-<%# Saccade, 2026-11-24 (v2): no logo on top of the e-mail (mail apps already show the sender's logo there); instead a signature
+<%# Saccade, 2026-11-24 (v3): signature = full Saccade Media House logo (public/saccade-media-house-logo.png) and saccadeproduction.com.
+    v2: no logo on top of the e-mail (mail apps already show the sender's logo there); instead a signature
     at the bottom of every e-mail (invitation, signed, copy of documents, code): Saccade mark | SACCADE PRODUCTION, saccadeproduction.com.
     The mark is a PNG, not SVG: Gmail and Outlook do not show SVG. File: public/saccade-mail-mark.png (mounted).
     Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade.
@@ -14,11 +15,10 @@
     <%= yield %>
     <table role="presentation" cellpadding="0" cellspacing="0" border="0" dir="ltr" style="margin:28px 0 0;border-collapse:collapse">
       <tr>
-        <td style="padding:0 16px 0 0;vertical-align:middle"><a href="https://saccadeproduction.com" style="text-decoration:none"><img src="https://sign.context.select/saccade-mail-mark.png" alt="saccade" width="52" height="52" style="display:block;border:0;outline:none;width:52px;height:52px"></a></td>
-        <td style="padding:3px 0 3px 16px;border-left:1px solid #D6D3CD;vertical-align:middle;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;line-height:1.3">
-          <div style="font-size:13px;font-weight:700;letter-spacing:2.6px;color:#1E252D;white-space:nowrap">SACCADE PRODUCTION</div>
-          <div style="margin-top:7px;font-size:14px"><a href="https://saccadeproduction.com" style="color:#1E252D;text-decoration:underline">saccadeproduction.com</a></div>
-        </td>
+        <td style="padding:0;vertical-align:middle"><a href="https://saccadeproduction.com" style="text-decoration:none"><img src="https://sign.context.select/saccade-media-house-logo.png" alt="Saccade Media House" width="169" height="26" style="display:block;border:0;outline:none;width:169px;height:26px"></a></td>
+      </tr>
+      <tr>
+        <td style="padding:8px 0 0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.3"><a href="https://saccadeproduction.com" style="color:#1E252D;text-decoration:underline">saccadeproduction.com</a></td>
       </tr>
     </table>
     <%= render partial: 'shared/mailer_attribution' %>
