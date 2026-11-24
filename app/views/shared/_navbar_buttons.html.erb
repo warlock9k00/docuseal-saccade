@@ -1,8 +1,4 @@
+<%# Saccade, 2026-11-24: no UPGRADE button in settings; the impersonation alert stays. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade %>
 <% if signed_in? && current_user != true_user %>
   <%= render 'shared/test_alert' %>
-<% elsif request.path.starts_with?('/settings') %>
-  <%= link_to "#{Docuseal::CLOUD_URL}/sign_up?#{{ redir: "#{Docuseal::CONSOLE_URL}/on_premises" }.to_query}", class: 'hidden md:inline-flex btn btn-warning btn-sm', data: { turbo_prefetch: false } do %>
-    <%= t('upgrade') %>
-  <% end %>
-  <span class="hidden md:inline-flex h-3 border-r border-base-content"></span>
 <% end %>

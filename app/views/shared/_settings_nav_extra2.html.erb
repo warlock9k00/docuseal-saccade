@@ -1,0 +1,12 @@
+<%# Saccade, 2026-11-24: settings menu without DocuSeal sales and support links (Plans/Pro, Console, GitHub, Discord,
+    AI chat, support@docuseal.com); the version badge stays; link to our modified source code (AGPL §13).
+    Empty hook in DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade %>
+<li>
+  <a href="https://github.com/warlock9k00/docuseal-saccade" target="_blank" rel="noopener" class="text-base hover:bg-base-300">Source code (AGPL)</a>
+</li>
+<style>
+  #account_settings_menu li:has(>a .badge-warning),
+  #account_settings_menu li:has(>a[href*="console.docuseal"]),
+  #support_channels>:not(a.badge){display:none!important}
+  #support_channels{border-top:0!important}
+</style>

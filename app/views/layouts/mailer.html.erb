@@ -1,3 +1,6 @@
+<%# Saccade, 2026-11-24: Saccade logo on top of every e-mail (invitation, signed, copy of documents, code). PNG, not SVG:
+    Gmail and Outlook do not show SVG. File: public/saccade-mail-logo.png (mounted). Modification of DocuSeal 3.3.8 (AGPL-3.0);
+    source: https://github.com/warlock9k00/docuseal-saccade. The Saccade logo is its owner's trademark and is not licensed under AGPL. %>
 <!DOCTYPE html>
 <html>
   <head>
@@ -6,6 +9,7 @@
     <style></style>
   </head>
   <body dir="<%= TextUtils.rtl?(yield) ? 'rtl' : 'auto' %>">
+    <div style="margin:0 0 24px"><img src="https://sign.context.select/saccade-mail-logo.png" alt="saccade" width="97" height="33" style="display:block;border:0;outline:none;width:97px;height:33px"></div>
     <%= yield %>
     <%= render partial: 'shared/mailer_attribution' %>
   </body>

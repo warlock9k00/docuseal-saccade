@@ -1,7 +1,14 @@
+<%# Saccade, 2026-11-24: default browser tab title "Saccade Legal" instead of "DocuSeal | Open Source Document Signing";
+    Saccade mark in the template editor. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade. The Saccade logo is its owner's trademark and is not licensed under AGPL. %>
 <title>
-  <%= turbo_native_app? ? content_for(:native_title) : (content_for(:html_title) || (signed_in? ? 'DocuSeal' : 'DocuSeal | Open Source Document Signing')) %>
+  <%= turbo_native_app? ? content_for(:native_title) : (content_for(:html_title) || 'Saccade Legal') %>
 </title>
 <%= render 'shared/meta' %>
+<%# template editor: DocuSeal draws its 40 px logo from compiled Vue (template_builder/logo.vue); swap it for the Saccade mark %>
+<style>
+  a[href="/"]>svg[height="40"][viewBox="0 0 180 180"]{display:none}
+  a[href="/"]:has(>svg[height="40"][viewBox="0 0 180 180"]){display:block;width:24px;height:40px;background:url(/saccade-mark.svg) center/contain no-repeat}
+</style>
 <% if turbo_native_app? %>
   <meta name="turbo-cache-control" content="no-preview">
   <%= render 'layouts/native_styles' %>
