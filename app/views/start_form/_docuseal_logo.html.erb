@@ -67,14 +67,15 @@
         label.setAttribute('aria-disabled', 'true');
         label.style.cssText = 'opacity:.45;cursor:default;text-decoration:none';
         (function tick () {
+          var b0 = window.__saccResend ? window.__saccResend() : base;
           if (left <= 0) {
-            label.textContent = base;
+            label.textContent = b0;
             label.setAttribute('for', 'resend_code');
             label.removeAttribute('aria-disabled');
             label.removeAttribute('style');
             return;
           }
-          label.textContent = base + ' (' + left + ' s)';
+          label.textContent = b0 + ' (' + left + ' s)';
           left -= 1;
           setTimeout(tick, 1000);
         })();
@@ -83,6 +84,54 @@
     })();
   </script>
 <% end %>
+<%# Saccade, 2026-11-24 (Sasha: show where the code went, and a way to fix a mistyped address): on the shared-link code screen
+    (start_form/email_verification, not resubmit) the sentence names the address — "We sent a 6-digit code to a@b.c" — and the
+    row under the code field reads "Change email" (left) · "Re-send Code" (right). "Change email" goes back to the start page with
+    the address filled in. An error or notice that DocuSeal put in the left slot moves to its own line under the row.
+    The invited-signer code screen (submit_form/email_2fa) already names the address and its address is set by the sender. %>
+<script nonce="<%= content_security_policy_nonce %>">
+  (function () {
+    function T (en, ru) { return window.SaccadeLang ? window.SaccadeLang.t(en, ru) : en; }
+    function esc (s) { return String(s).replace(/[&<>"']/g, function (c) { return '&#' + c.charCodeAt(0) + ';'; }); }
+    function run () {
+      var form = document.getElementById('code_form');
+      if (!form || form.dataset.saccadeEmail) return;
+      var em = form.querySelector('input[name="submitter[email]"]'), rs = form.querySelector('input[name="resubmit"]');
+      var label = document.getElementById('resend_label'), row = label && label.closest('.justify-between');
+      if (!em || !em.value || (rs && rs.value) || !row || !row.firstElementChild) return;
+      form.dataset.saccadeEmail = '1';
+      var email = em.value, text = form.previousElementSibling;
+      function say () {
+        if (text && !text.querySelector('input')) text.innerHTML = T('We sent a 6-digit code to ', 'Мы отправили 6-значный код на ') +
+          '<b style="font-weight:600;overflow-wrap:anywhere">' + esc(email) + '</b>' + T('. Enter it below to continue.', '. Введите его ниже, чтобы продолжить.');
+      }
+      var slot = row.firstElementChild;
+      if (slot.textContent.trim()) {
+        var note = document.createElement('div');
+        note.style.cssText = 'margin-top:8px;font-size:14px;line-height:1.4';
+        while (slot.firstChild) note.appendChild(slot.firstChild);
+        row.parentNode.insertBefore(note, row.nextSibling);
+      }
+      var u = new URL(form.getAttribute('action'), location.href);
+      u.search = '';
+      u.searchParams.set('email', email);
+      var nm = form.querySelector('input[name="submitter[name]"]');
+      if (nm && nm.value) u.searchParams.set('name', nm.value);
+      var a = document.createElement('a');
+      a.className = 'link'; a.href = u.pathname + u.search;
+      window.__saccResend = function () { return T('Re-send code', 'Отправить снова'); };
+      function lab () {
+        a.textContent = T('Change email', 'Изменить почту');
+        if (!label.dataset.saccadeWait || !label.hasAttribute('aria-disabled')) label.textContent = window.__saccResend();
+      }
+      slot.textContent = ''; slot.appendChild(a);
+      say(); lab();
+      if (window.SaccadeLang) window.SaccadeLang.onChange(function () { say(); lab(); });
+    }
+    function later () { setTimeout(run, 0); }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', later); else later();
+  })();
+</script>
 <%# Saccade, 2026-11-21: e-mail code field. DocuSeal renders it without autocomplete, so iPhone/Mac do not offer the code
     from Mail above the keyboard. autocomplete="one-time-code" turns that on (Safari; Chrome on Android uses its own rules).
     Covers both code screens: start_form/email_verification and submit_form/email_2fa render this partial. %>
