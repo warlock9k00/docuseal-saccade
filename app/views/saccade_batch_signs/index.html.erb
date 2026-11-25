@@ -1,0 +1,91 @@
+<%# Saccade, 2026-11-25: batch signing page for the company (see app/controllers/saccade_batch_signs_controller.rb). Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade %>
+<div class="max-w-4xl mx-auto px-2 mb-10">
+  <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-2">To sign</h1>
+  <p class="text-base-content/70 mb-6">Everyone else has signed these. Open each to review, tick the ones to sign, confirm once.</p>
+
+  <% if @results.present? %>
+    <div class="rounded-xl border border-base-300 p-4 mb-6">
+      <% @results.each do |r| %>
+        <div class="py-1">
+          <% if r['ok'] %>✓ Submission <%= r['id'] %> — signed<% else %>✗ Submission <%= r['id'] %> — not signed: <%= r['error'] %><% end %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @signature.blank? %>
+    <div class="rounded-xl bg-base-200 p-4 mb-6">
+      No saved signature yet. Save it once in
+      <%= link_to 'Settings → Profile → Signature', settings_profile_index_path, class: 'link font-semibold' %>,
+      then come back here.
+    </div>
+  <% end %>
+
+  <% batchable = @items.select { |i| i[:batchable] } %>
+  <% manual = @items.reject { |i| i[:batchable] } %>
+
+  <% if @items.empty? %>
+    <p class="text-lg">Nothing to sign.</p>
+  <% else %>
+    <%= form_tag saccade_batch_sign_path, method: :post, id: 'saccade_batch_form' do %>
+      <%= hidden_field_tag :timezone, '', id: 'saccade_batch_tz' %>
+      <div class="rounded-xl border border-base-300 divide-y divide-base-300 mb-6">
+        <% batchable.each do |item| %>
+          <% s = item[:submission] %>
+          <label class="flex items-start gap-3 p-4 cursor-pointer">
+            <%= check_box_tag 'submitter_ids[]', item[:submitter].id, true, class: 'checkbox mt-1' %>
+            <span class="flex-1">
+              <span class="font-semibold"><%= s.template&.name || s.name %></span>
+              <span class="text-base-content/60"> · #<%= s.id %></span><br>
+              <% item[:others].each do |o| %>
+                <span class="text-sm"><%= o.name.presence || o.email %> <span class="text-base-content/60">signed <%= l(o.completed_at.in_time_zone(current_user.account.timezone), format: :short) rescue o.completed_at.to_date %></span></span><br>
+              <% end %>
+            </span>
+            <%= link_to 'Open', "/to-sign/open/#{item[:submitter].id}", target: '_blank', class: 'btn btn-sm btn-outline' %>
+          </label>
+        <% end %>
+      </div>
+
+      <% if batchable.any? %>
+        <% if @signature.present? %>
+          <div class="mb-4">
+            <div class="text-sm text-base-content/60 mb-1">Your saved signature</div>
+            <img src="<%= @signature.url %>" alt="Saved signature" class="h-16 bg-white rounded border border-base-300 p-1">
+          </div>
+        <% end %>
+        <label class="flex items-start gap-3 mb-4 cursor-pointer">
+          <%= check_box_tag :reviewed, '1', false, class: 'checkbox mt-1', required: true %>
+          <span id="saccade_batch_text" data-template="<%= SaccadeBatchSignsController.confirmation_text(current_user, 999_999) %>"><%= SaccadeBatchSignsController.confirmation_text(current_user, batchable.size) %></span>
+        </label>
+        <button type="submit" id="saccade_batch_submit" class="btn btn-neutral text-base" <%= 'disabled data-nosig' if @signature.blank? %> data-turbo="false">Sign <span id="saccade_batch_n"><%= batchable.size == 1 ? '1 document' : "#{batchable.size} documents" %></span></button>
+      <% end %>
+    <% end %>
+
+    <% if manual.any? %>
+      <h2 class="text-xl font-bold mt-8 mb-2">Sign in the form</h2>
+      <p class="text-base-content/70 mb-2">These have fields that need your input.</p>
+      <div class="rounded-xl border border-base-300 divide-y divide-base-300">
+        <% manual.each do |item| %>
+          <div class="flex items-center gap-3 p-4">
+            <span class="flex-1"><span class="font-semibold"><%= item[:submission].template&.name %></span> · #<%= item[:submission].id %> <span class="text-base-content/60">(<%= item[:blocker] %>)</span></span>
+            <%= link_to 'Sign', submit_form_path(slug: item[:submitter].slug), target: '_blank', class: 'btn btn-sm btn-outline' %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+<script nonce="<%= content_security_policy_nonce %>">
+  (function () {
+    var tz = document.getElementById('saccade_batch_tz'); if (tz) { try { tz.value = Intl.DateTimeFormat().resolvedOptions().timeZone } catch (e) {} }
+    var form = document.getElementById('saccade_batch_form'); if (!form) return;
+    var text = document.getElementById('saccade_batch_text'), n = document.getElementById('saccade_batch_n'), btn = document.getElementById('saccade_batch_submit');
+    function update () {
+      var c = form.querySelectorAll('input[name="submitter_ids[]"]:checked').length;
+      if (n) n.textContent = c === 1 ? '1 document' : c + ' documents';
+      if (text) text.textContent = text.dataset.template.replace('999999 documents', c === 1 ? '1 document' : c + ' documents');
+      if (btn && !btn.hasAttribute('data-nosig')) btn.disabled = c === 0;
+    }
+    form.addEventListener('change', update); update();
+  })();
+</script>
