@@ -1,4 +1,18 @@
-<%# Saccade, 2026-11-24: no UPGRADE button in settings; the impersonation alert stays. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade %>
+<%# Saccade, 2026-11-24: no UPGRADE button in settings; the impersonation alert stays. 2026-11-25: "To sign (N)" link to the company batch signing page (/to-sign) when the user has documents where everyone else has signed. Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade %>
 <% if signed_in? && current_user != true_user %>
   <%= render 'shared/test_alert' %>
+<% end %>
+<% if signed_in? %>
+  <% saccade_to_sign = begin
+       Submitter.where(account_id: current_user.account_id, completed_at: nil, declined_at: nil)
+                .where('LOWER(submitters.email) = ?', current_user.email.downcase)
+                .joins(:submission).where(submissions: { archived_at: nil })
+                .includes(submission: :submitters)
+                .count { |s| (o = s.submission.submitters.reject { |x| x.id == s.id }).any? && o.all?(&:completed_at?) }
+     rescue StandardError
+       0
+     end %>
+  <% if saccade_to_sign.positive? %>
+    <a href="/to-sign" class="btn btn-neutral btn-sm text-base mr-2">To sign (<%= saccade_to_sign %>)</a>
+  <% end %>
 <% end %>
