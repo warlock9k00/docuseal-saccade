@@ -26,6 +26,30 @@ options_ru:
   Individual: Физлицо
   Sole proprietor: ИП
   Entity: Компания
+  'Yes': Да
+  'No': Нет
+  Active NFFE: Активная нефинансовая компания (NFFE)
+  Passive NFFE: Пассивная нефинансовая компания (NFFE)
+  Government: Государство или его орган
+  Tax-exempt pension trust or pension fund: Освобождённый от налога пенсионный траст или фонд
+  Other tax-exempt organization: Другая освобождённая от налога организация
+  Publicly traded corporation: Публичная компания
+  Subsidiary of a publicly traded corporation: Дочерняя компания публичной компании
+  Company that meets the ownership and base erosion test: Компания, отвечающая тесту владения и размывания налоговой базы
+  Company that meets the derivative benefits test: Компания, отвечающая тесту производных льгот
+  Company with an item of income that meets active trade or business test: Компания, доход которой отвечает тесту активной деятельности
+  Favorable discretionary determination by the U.S. competent authority received: Получено положительное решение компетентного органа США
+  No LOB article in treaty: В соглашении нет статьи об ограничении льгот
+  Other: Другое
+  direct: Напрямую
+  through a payment agent: Через платёжного агента
+  None engaged by me: Никого не привлекал
+  Listed below: Перечисляю ниже
+  contractor: Подрядчик
+  partner: Партнёр
+  officer: Должностное лицо
+  assistant to a Saccade contractor: Ассистент подрядчика Saccade
+  by the Affiliate: ИП Майилян Элен
 title_patterns_ru:
   "\\ASignature p\\.\\s*(\\d+)\\z": Подпись, с. \1
   "\\ADate p\\.\\s*(\\d+)\\z": Дата, с. \1
@@ -106,6 +130,31 @@ fields:
     hint:
       en: 'Only if you sign for an entity: your position. Otherwise skip.'
       ru: 'Только если подписываете за компанию: должность. Иначе пропустить.'
+  Bank account holder:
+    title_ru: Владелец счёта
+    hint:
+      en: Name on the bank account, in Latin letters, exactly as the bank has it. For a company account, the company's name. If the account is not yours or your company's, write to legal@saccadeproduction.com before signing.
+      ru: Имя владельца счёта латиницей — точно как в банке. Для счёта компании — название компании. Если счёт не ваш и не вашей компании, до подписи напишите на legal@saccadeproduction.com.
+  Bank name:
+    title_ru: Название банка
+    hint:
+      en: Full name of your bank.
+      ru: Полное название вашего банка.
+  IBAN or account number:
+    title_ru: IBAN или номер счёта
+    hint:
+      en: IBAN if your bank has one (as in Europe, Israel, Georgia or Kazakhstan); otherwise the account number. For a US account, add the 9-digit routing number (ABA). If your bank gives another local code for incoming payments, add it too.
+      ru: IBAN, если он есть у вашего банка (как в Европе, Израиле, Грузии или Казахстане); иначе номер счёта. Для счёта в США добавьте девятизначный код банка ABA. Если банк даёт для входящих переводов другой местный код — укажите и его.
+  SWIFT / BIC:
+    title_ru: SWIFT / BIC
+    hint:
+      en: The bank's SWIFT or BIC code, 8 or 11 letters and digits, as in your bank's details for incoming international transfers. For a US account, you may skip it.
+      ru: Код SWIFT или BIC банка — 8 или 11 букв и цифр, как в реквизитах банка для входящих международных переводов. Для счёта в США можно пропустить.
+  Bank address:
+    title_ru: Адрес банка
+    hint:
+      en: 'Bank''s address: city and country are enough if you do not know the full address. If your bank asked that payments in US dollars go through an intermediary bank, add its name and SWIFT here. You may skip it.'
+      ru: 'Адрес банка: хватит города и страны, если полного не знаете. Если банк просил, чтобы платежи в долларах шли через банк-посредник, добавьте здесь его название и SWIFT. Можно пропустить.'
   Recipient signature:
     title_ru: Подпись
     hint:
@@ -211,7 +260,7 @@ fields:
   Platform login:
     title_ru: Логин на платформе
     hint:
-      en: Your login on the platform (e.g. VTereshonok).
+      en: Your login on the platform (e.g. JSmith).
       ru: Логин на платформе.
   Phone:
     title_ru: Телефон
@@ -231,8 +280,8 @@ fields:
   Access to the platform since:
     title_ru: Доступ к платформе с
     hint:
-      en: Date of your first access to the platform, approximately.
-      ru: Дата первого входа, примерно.
+      en: Date of your first access to the platform, approximately. If you have no access yet, write "Not yet".
+      ru: Дата первого входа, примерно. Если доступа ещё нет — так и напишите по-английски.
   Signature — NDA:
     title_ru: Подпись — NDA
   Date — NDA:
@@ -247,12 +296,479 @@ fields:
     title_ru: Дата — Exhibit D
   NDA date (day and month, e.g. 25 November):
     title_ru: Дата NDA (день и месяц, например, 25 November)
+  Description of Material:
+    title_ru: Что вы сделали для GANTZ
+    hint:
+      en: 'What you made or did for GANTZ, in a few words: for example, "assets and shots in the platform", "shot timings, call summaries and production coordination".'
+      ru: 'Коротко, что вы сделали для GANTZ, — по-английски, документ на английском. Например: ассеты и шоты на платформе; тайминги шотов, саммари созвонов и координация производства.'
+  Persons engaged by you who contributed:
+    title_ru: Кто помогал вам (нанятые вами)
+    hint:
+      en: 'Anyone you yourself asked or paid to help with your GANTZ work — assistants, friends, studios. Each of them must also sign a certificate. If nobody, choose "None engaged by me"; otherwise choose "Listed below" and give their names in the next field.'
+      ru: 'Все, кого вы сами просили или кому платили за помощь в работе над GANTZ, — ассистенты, друзья, студии. Каждый из них тоже должен подписать сертификат. Если таких нет — выберите «Никого не привлекал», если были — «Перечисляю ниже» и впишите их имена в следующем поле.'
+  Names of persons engaged by you, if any:
+    title_ru: Имена тех, кто помогал (если есть)
+    hint:
+      en: 'Full names in Latin letters. Leave empty if you chose "None engaged by me".'
+      ru: 'Полные имена латиницей. Оставьте пустым, если выбрали «Никого не привлекал».'
+  Remuneration for GANTZ (amount, currency):
+    title_ru: Вознаграждение за GANTZ (сумма, валюта)
+    hint:
+      en: 'As agreed with Saccade, in English, without abbreviations: the amount, the currency and what it is for, for example "USD [amount] for [the work / each month from … to …]". Schedule 2 is not shown to the client.'
+      ru: 'Как договорились с Saccade, — по-английски, документ на английском, без сокращений: сумма, валюта и за что (за работу или за каждый месяц с … по …). Приложение 2 клиенту не показывается.'
+  Received / still payable:
+    title_ru: Получено / к оплате
+    hint:
+      en: 'What you have received and what Saccade still owes you for GANTZ, in English, for example "USD [amount] received; USD [amount] payable on delivery" or "all received". If nothing is owed, say so.'
+      ru: 'Что вы уже получили и что Saccade ещё должна вам за GANTZ, — по-английски: сколько получено и сколько и когда к оплате. Если всё получено и долга нет — так и напишите.'
+  Paid via:
+    title_ru: Как платят
+    hint:
+      en: 'Direct — Saccade pays you. Through a payment agent — someone pays you on behalf of Saccade. By the Affiliate — you were paid by Individual Entrepreneur Mayilyan Elen Geghami against your invoices.'
+      ru: 'Напрямую — платит Saccade. Через платёжного агента — вам платят за Saccade через другого человека или компанию. ИП Майилян Элен — вам платило ИП Майилян Элен по вашим счетам.'
+  Role on the Picture:
+    title_ru: Роль в проекте
+    hint:
+      en: 'Your role on GANTZ, for example "Producer", "AI artist", "Line producer".'
+      ru: 'Ваша роль в GANTZ — по-английски, документ на английском. Например: продюсер, ИИ-художник, линейный продюсер.'
+  Engaged by Saccade as:
+    title_ru: Кем вас привлёк Saccade
+    hint:
+      en: 'How you work with Saccade. Most people are "contractor". Founders and partners — "partner"; Saccade''s CEO — "officer"; if another Saccade contractor engaged you — "assistant to a Saccade contractor".'
+      ru: 'Как вы работаете с Saccade. Обычно — «Подрядчик». Основатели и партнёры — «Партнёр»; генеральный директор Saccade — «Должностное лицо»; если вас привлёк другой подрядчик Saccade — «Ассистент подрядчика Saccade».'
+  Proposed access location (city, country):
+    title_ru: Откуда заходите (город, страна)
+    hint:
+      en: 'City and country from which you access the platform. If there are several, list all. If you connect through a VPN, add "access through VPN".'
+      ru: 'Город и страна, откуда вы заходите на платформу, — по-английски. Если мест несколько — все. Если заходите через ВПН — допишите это по-английски.'
   I agree to sign this Agreement electronically:
     title_ru: Согласен(на) подписать договор электронно
   I have reviewed the signed Agreement and want to send it:
     title_ru: Я проверил(а) подписанный договор и хочу его отправить
+  I agree to sign this form electronically:
+    title_ru: Согласен(на) подписать форму электронно
+  I have reviewed the signed form and want to send it:
+    title_ru: Я проверил(а) подписанную форму и хочу её отправить
   I confirm the uploaded file is this Agreement signed by me:
     title_ru: 'Подтверждаю: загружен этот договор с моей подписью'
+  # --- W-8BEN (шаблон «W-8BEN», папка Tax forms; сборщик docuseal-templates/w8_tpl.rb) ---
+  Line 1. Name of individual who is the beneficial owner:
+    title_ru: Строка 1. Имя физлица — фактического получателя дохода
+    hint:
+      en: |-
+        Your full name as in your passport, in Latin letters. Fill in the whole form in English.
+
+        **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter in this form (name, citizenship, addresses, tax numbers, date of birth, tax treaty details, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+        We use them to document your foreign status for U.S. tax withholding and reporting on payments we make to you, and to keep the form and proof of it as U.S. tax law requires. The legal basis is the need to perform our contract with you, and our legitimate interests in complying with U.S. tax law, in keeping proof of the form and in establishing, exercising or defending legal claims. You are not legally required to provide the details, but without the required fields the form cannot be signed, and without a valid form we may be unable to pay you or may have to apply U.S. withholding and reporting rules.
+
+        The data is stored for us by Hetzner on our server in Germany and on Google Drive. On Google Drive we keep backups, encrypted with our key before upload so that Google cannot read them, and copies of the signed form and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us, and we transfer the data there because it is necessary to perform our contract with you (Art. 49(1)(b) GDPR).
+
+        Apart from these providers, we disclose it only to our legal and accounting advisers, to banks and payment providers that ask for it to make payments to you, and to the U.S. Internal Revenue Service, courts or other authorities where the law requires it.
+
+        We keep it while we make payments to you under this form and afterwards for as long as it may be relevant to our U.S. tax obligations for those payments or claims about them can be brought.
+
+        You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what the law requires us to keep or what we need to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+      ru: |-
+        Полное имя как в паспорте, латиницей. Всю форму заполняйте по-английски.
+
+        Перевод для удобства: форма W-8BEN — официальная форма Налоговой службы США (IRS) на английском языке; при расхождении перевода с английским текстом действует английский.
+
+        **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите в эту форму (имя, гражданство, адреса, налоговые номера, дата рождения, данные о налоговом соглашении, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+        Они нужны, чтобы подтвердить ваш статус иностранного лица для удержания налога США и отчётности по нашим выплатам вам и хранить форму и доказательство её подписи, как требует налоговый закон США. Правовое основание — необходимость исполнять наш договор с вами и наш законный интерес соблюдать налоговый закон США, хранить доказательство формы и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей форму не подписать, а без действующей формы мы можем не суметь заплатить вам или будем обязаны применить правила удержания и отчётности США.
+
+        Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске. На Google Диске лежат резервные копии, зашифрованные нашим ключом до загрузки (их Google прочитать не может), и копии подписанной формы и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет, и мы передаём данные туда, потому что это необходимо для исполнения нашего договора с вами (ст. 49(1)(b) Общего регламента ЕС о защите данных).
+
+        Кроме этих провайдеров, передаём данные только нашим юристам и бухгалтерам, банкам и платёжным сервисам, которые запрашивают их для выплат вам, и Налоговой службе США, суду или другим органам, когда этого требует закон.
+
+        Храним, пока платим вам по этой форме, и после — пока она может быть важна для наших налоговых обязанностей в США по этим выплатам или пока по ним можно предъявить требования.
+
+        Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что мы обязаны хранить по закону или что нужно для требований и защиты от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+  Line 2. Country of citizenship:
+    title_ru: Строка 2. Страна гражданства
+    hint:
+      en: In English, for example Israel. If you are a citizen of more than one country, enter the country where you are both a citizen and a resident now; if you are not a resident of any of them, enter the country where you were most recently a resident. U.S. citizens and U.S. tax residents must not sign this form — write to legal@saccadeproduction.com.
+      ru: По-английски, например Israel. Если гражданств несколько — страна, где вы сейчас и гражданин, и резидент; если ни в одной из них не живёте — страна, где вы были резидентом последней. Граждане и налоговые резиденты США эту форму не подписывают — напишите на legal@saccadeproduction.com.
+  Line 3. Permanent residence address:
+    title_ru: Строка 3. Адрес постоянного проживания
+    hint:
+      en: Street, building, apartment — your address in the country where you are a tax resident (if you are not a tax resident anywhere — where you normally live), in Latin letters. Not a P.O. box or an in-care-of address.
+      ru: Улица, дом, квартира — адрес в стране, где вы налоговый резидент (если вы нигде не налоговый резидент — где обычно живёте), латиницей. Не абонентский ящик и не адрес «для передачи».
+  Line 3. City or town, state or province, postal code:
+    title_ru: Строка 3. Город, регион, индекс
+    hint:
+      en: In Latin letters.
+      ru: Латиницей.
+  Line 3. Country:
+    title_ru: Строка 3. Страна
+    hint:
+      en: In English, for example Israel.
+      ru: По-английски, например Israel.
+  My mailing address is different:
+    title_ru: Почтовый адрес другой
+    hint:
+      en: Tick only if you get mail at a different address — then fill in line 4. Otherwise leave it and press Next.
+      ru: Отметьте, только если почту получаете по другому адресу, — тогда заполните строку 4. Иначе просто нажмите «Далее».
+  Line 4. Mailing address:
+    title_ru: Строка 4. Почтовый адрес
+    hint:
+      en: Street, building, apartment, in Latin letters.
+      ru: Улица, дом, квартира, латиницей.
+  Line 4. City or town, state or province, postal code:
+    title_ru: Строка 4. Город, регион, индекс
+    hint:
+      en: In Latin letters.
+      ru: Латиницей.
+  Line 4. Country:
+    title_ru: Строка 4. Страна
+    hint:
+      en: In English.
+      ru: По-английски.
+  Line 5. U.S. taxpayer identification number (SSN or ITIN):
+    title_ru: Строка 5. Налоговый номер США (SSN или ITIN)
+    hint:
+      en: Only if you have one. No SSN or ITIN — leave it empty and press Next. To claim certain tax treaty benefits (Part II), you need a U.S. number here or a foreign tax number on line 6a.
+      ru: Только если он у вас есть. Нет SSN или ITIN — оставьте пустым и нажмите «Далее». Для некоторых льгот по налоговому соглашению (раздел II) нужен номер США здесь или иностранный налоговый номер в строке 6a.
+  Line 6a. Foreign tax identifying number:
+    title_ru: Строка 6a. Иностранный налоговый номер
+    hint:
+      en: The tax identification number issued to you by the country where you are a tax resident (line 3). If you don't have one, leave it empty and see line 6b.
+      ru: Налоговый номер, который вам выдала страна вашего налогового резидентства (строка 3). Нет номера — оставьте пустым и посмотрите строку 6b.
+  Line 6b. FTIN not legally required:
+    title_ru: Строка 6b. Налоговый номер по закону не нужен
+    hint:
+      en: Tick only if you left line 6a empty because the country where you are a tax resident does not require you to have a tax number. Otherwise leave it.
+      ru: Отметьте, только если оставили строку 6a пустой, потому что страна вашего налогового резидентства не требует от вас налогового номера. Иначе не отмечайте.
+  Line 7. Reference number(s):
+    title_ru: Строка 7. Справочный номер
+    hint:
+      en: Leave it empty unless Saccade Media House asked you to enter a reference number.
+      ru: Оставьте пустым, если Saccade Media House не просила указать номер.
+  Line 8. Date of birth:
+    title_ru: Строка 8. Дата рождения
+    hint:
+      en: Choose your date of birth. The form shows it as month-day-year.
+      ru: Выберите дату рождения. В форме она будет записана как месяц-день-год.
+  I claim tax treaty benefits (Part II):
+    title_ru: Заявляю льготу по налоговому соглашению (раздел II)
+    hint:
+      en: Tick only if you claim a reduced rate of, or exemption from, U.S. withholding under the income tax treaty between your country and the United States — then fill in lines 9 and 10. Otherwise leave it and press Next.
+      ru: Отметьте, только если заявляете пониженную ставку удержания налога США или освобождение от него по соглашению об избежании двойного налогообложения между вашей страной и США, — тогда заполните строки 9 и 10. Иначе просто нажмите «Далее».
+  Line 9. Treaty country of residence:
+    title_ru: Строка 9. Страна резидентства по соглашению
+    hint:
+      en: The country with the tax treaty, where you are a resident, in English.
+      ru: Страна соглашения, где вы резидент, по-английски.
+  Line 10. Article and paragraph of the treaty:
+    title_ru: Строка 10. Статья и пункт соглашения
+    hint:
+      en: 'Fill in line 10 only if your treaty claim requires conditions not covered by line 9 and Part III (IRS instructions: line 10 “must be used only if you are claiming treaty benefits that require that you meet conditions not covered by the representations you make on line 9 and Part III”). Otherwise leave it empty. If unsure, ask your tax adviser.'
+      ru: Строку 10 заполняйте, только если льгота по соглашению требует условий, которых нет в строке 9 и разделе III (так в инструкции налоговой службы США). Иначе оставьте пустой. Если не уверены — спросите своего налогового консультанта.
+  Line 10. Rate of withholding, %:
+    title_ru: Строка 10. Ставка удержания, %
+    hint:
+      en: The rate of U.S. withholding you claim, in percent.
+      ru: Ставка удержания налога США, которую вы заявляете, в процентах.
+  Line 10. Type of income:
+    title_ru: Строка 10. Вид дохода
+    hint:
+      en: The type of income this rate applies to, in English.
+      ru: Вид дохода, к которому применяется ставка, по-английски.
+  Line 10. Additional conditions:
+    title_ru: Строка 10. Дополнительные условия
+    hint:
+      en: The additional conditions in that article and paragraph that you meet to qualify for this rate, in English.
+      ru: Дополнительные условия этой статьи и пункта, которым вы соответствуете для этой ставки, по-английски.
+  Print name of signer:
+    title_ru: Имя подписанта
+    hint:
+      en: Your full name in Latin letters, the same as on line 1. This online form must be signed personally by the person on line 1. If someone else has to sign for you under a power of attorney, do not use this link — write to legal@saccadeproduction.com.
+      ru: Ваше полное имя латиницей, как в строке 1. Эту онлайн-форму подписывает лично человек из строки 1. Если за вас должен подписать представитель по доверенности, не используйте эту ссылку — напишите на legal@saccadeproduction.com.
+  Signature of beneficial owner:
+    title_ru: Подпись
+    hint:
+      en: |-
+        **By signing, you make the following certification (Part III of the form) under penalties of perjury.** Read it before you sign.
+
+        Under penalties of perjury, I declare that I have examined the information on this form and to the best of my knowledge and belief it is true, correct, and complete. I further certify under penalties of perjury that:
+
+        • I am the individual that is the beneficial owner (or am authorized to sign for the individual that is the beneficial owner) of all the income or proceeds to which this form relates or am using this form to document myself for chapter 4 purposes;
+
+        • The person named on line 1 of this form is not a U.S. person;
+
+        • This form relates to: (a) income not effectively connected with the conduct of a trade or business in the United States; (b) income effectively connected with the conduct of a trade or business in the United States but is not subject to tax under an applicable income tax treaty; (c) the partner’s share of a partnership’s effectively connected taxable income; or (d) the partner’s amount realized from the transfer of a partnership interest subject to withholding under section 1446(f);
+
+        • The person named on line 1 of this form is a resident of the treaty country listed on line 9 of the form (if any) within the meaning of the income tax treaty between the United States and that country; and
+
+        • For broker transactions or barter exchanges, the beneficial owner is an exempt foreign person as defined in the instructions.
+
+        Furthermore, I authorize this form to be provided to any withholding agent that has control, receipt, or custody of the income of which I am the beneficial owner or any withholding agent that can disburse or make payments of the income of which I am the beneficial owner. I agree that I will submit a new form within 30 days if any certification made on this form becomes incorrect.
+
+        Your signature is the last step: when you sign and press Complete, the form is sent. Draw your signature with your finger or mouse. The form is marked as signed electronically, and the date and time of signing are recorded.
+      ru: |-
+        **Подписывая, вы делаете это заявление (раздел III формы) под страхом наказания за лжесвидетельство.** Прочитайте его до подписи. Перевод для удобства: в форме — английский текст, действует он.
+
+        Под страхом наказания за лжесвидетельство заявляю, что проверил(а) сведения в этой форме и, насколько мне известно и по моему убеждению, они верны, точны и полны. Также под страхом наказания за лжесвидетельство подтверждаю, что:
+
+        • я — физлицо, которое является фактическим получателем (бенефициаром) всех доходов или поступлений, к которым относится эта форма (или вправе подписывать за такое физлицо), либо использую эту форму, чтобы подтвердить свой статус для целей главы 4;
+
+        • лицо из строки 1 этой формы не является «лицом США»;
+
+        • форма относится: (a) к доходу, не связанному фактически с ведением торговли или бизнеса в США; (b) к доходу, фактически связанному с ведением торговли или бизнеса в США, но не облагаемому налогом по применимому соглашению о подоходном налоге; (c) к доле партнёра в фактически связанном облагаемом доходе партнёрства; или (d) к сумме, полученной партнёром при передаче доли в партнёрстве, с которой удерживается налог по разделу 1446(f);
+
+        • лицо из строки 1 этой формы — резидент страны соглашения, указанной в строке 9 (если указана), в смысле соглашения о подоходном налоге между США и этой страной; и
+
+        • для брокерских операций и бартерных обменов фактический получатель — освобождённое иностранное лицо, как определено в инструкции.
+
+        Кроме того, разрешаю передавать эту форму любому налоговому агенту, который контролирует, получает или хранит доход, фактическим получателем которого я являюсь, либо который может распоряжаться таким доходом или выплачивать его. Обязуюсь подать новую форму в течение 30 дней, если любое заявление в этой форме станет неверным.
+
+        Подпись — последний шаг: когда вы подпишете и нажмёте «Завершить», форма уйдёт. Нарисуйте подпись пальцем или мышью. В форме будет отметка, что она подписана электронно; дата и время подписи записываются.
+  Date (MM-DD-YYYY):
+    title_ru: Дата (ММ-ДД-ГГГГ)
+  Signed electronically:
+    title_ru: Подписано электронно
+  # --- W-8BEN-E (шаблон «W-8BEN-E», папка Tax forms; сборщик docuseal-templates/w8e_tpl.rb) ---
+  Line 1. Name of organization that is the beneficial owner:
+    title_ru: Строка 1. Название компании — фактического получателя дохода
+    hint:
+      en: |-
+        The company's full legal name, as in its registration documents, in Latin letters. Fill in the whole form in English. This form is for companies; if you work with us as an individual or a sole proprietor, ask legal@saccadeproduction.com for Form W-8BEN instead.
+
+        **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter in this form (the company's name, country, status, addresses, tax numbers and tax treaty details; your name, email address and signature as the person signing for it) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+        We use them to document the company's foreign status for U.S. tax withholding and reporting on payments we make to it, and to keep the form and proof of it as U.S. tax law requires. The legal basis is our legitimate interests in performing our contract with the company, in complying with U.S. tax law, in keeping proof of the form and in establishing, exercising or defending legal claims. You are not legally required to provide the details, but without the required fields the form cannot be signed, and without a valid form we may be unable to pay the company or may have to apply U.S. withholding and reporting rules.
+
+        The data is stored for us by Hetzner on our server in Germany and on Google Drive. On Google Drive we keep backups, encrypted with our key before upload so that Google cannot read them, and copies of the signed form and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us, and we transfer the data there because it is necessary to perform our contract with the company, which is concluded in your interest as the person who represents it (Art. 49(1)(c) GDPR).
+
+        Apart from these providers, we disclose it only to our legal and accounting advisers, to banks and payment providers that ask for it to make payments to the company, and to the U.S. Internal Revenue Service, courts or other authorities where the law requires it.
+
+        We keep it while we make payments to the company under this form and afterwards for as long as it may be relevant to our U.S. tax obligations for those payments or claims about them can be brought.
+
+        You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what the law requires us to keep or what we need to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+      ru: |-
+        Полное юридическое название компании, как в регистрационных документах, латиницей. Всю форму заполняйте по-английски. Эта форма — для компаний; если вы работаете с нами как физлицо или ИП, попросите на legal@saccadeproduction.com форму W-8BEN.
+
+        Перевод для удобства: форма W-8BEN-E — официальная форма Налоговой службы США (IRS) на английском языке; при расхождении перевода с английским текстом действует английский.
+
+        **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите в эту форму (название, страну, статус, адреса, налоговые номера компании и данные о налоговом соглашении; ваши имя, адрес почты и подпись как лица, подписывающего за компанию), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+        Они нужны, чтобы подтвердить статус компании как иностранного лица для удержания налога США и отчётности по нашим выплатам ей и хранить форму и доказательство её подписи, как требует налоговый закон США. Правовое основание — наш законный интерес исполнять договор с компанией, соблюдать налоговый закон США, хранить доказательство формы и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей форму не подписать, а без действующей формы мы можем не суметь заплатить компании или будем обязаны применить правила удержания и отчётности США.
+
+        Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске. На Google Диске лежат резервные копии, зашифрованные нашим ключом до загрузки (их Google прочитать не может), и копии подписанной формы и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет, и мы передаём данные туда, потому что это необходимо для исполнения нашего договора с компанией, заключённого в ваших интересах как её представителя (ст. 49(1)(c) Общего регламента ЕС о защите данных).
+
+        Кроме этих провайдеров, передаём данные только нашим юристам и бухгалтерам, банкам и платёжным сервисам, которые запрашивают их для выплат компании, и Налоговой службе США, суду или другим органам, когда этого требует закон.
+
+        Храним, пока платим компании по этой форме, и после — пока она может быть важна для наших налоговых обязанностей в США по этим выплатам или пока по ним можно предъявить требования.
+
+        Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что мы обязаны хранить по закону или что нужно для требований и защиты от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+  Line 2. Country of incorporation or organization:
+    title_ru: Строка 2. Страна регистрации компании
+    hint:
+      en: The country under whose laws the company is created, in English, for example Israel. A U.S. company must not sign this form — write to legal@saccadeproduction.com.
+      ru: Страна, по законам которой создана компания, по-английски, например Israel. Компания из США эту форму не подписывает — напишите на legal@saccadeproduction.com.
+  Line 3. Name of disregarded entity receiving the payment:
+    title_ru: Строка 3. Название «прозрачной» компании, получающей платёж
+    hint:
+      en: In almost all cases leave it empty and press Next. It is filled in only by a disregarded entity that has a GIIN (a FATCA registration number); if that is your case, write to legal@saccadeproduction.com first.
+      ru: Почти всегда оставьте пустым и нажмите «Далее». Заполняет только «прозрачная» для налогов США компания с номером GIIN (регистрация по FATCA); если это ваш случай — сначала напишите на legal@saccadeproduction.com.
+  'Line 4. Chapter 3 status: Corporation':
+    title_ru: 'Строка 4. Тип компании по налоговым правилам США: корпорация'
+    hint:
+      en: Tick to confirm that the company is a corporation under U.S. tax rules (it is classified under U.S. rules, not under the law of your country). A foreign company whose owners all have limited liability (for example Ltd, LLC, GmbH, OOO) is a corporation for U.S. tax purposes, unless it has filed Form 8832 with the IRS to be treated otherwise. If the company is a partnership, a trust, a disregarded entity (for example a company with a single owner that has elected to be disregarded, or whose single owner has unlimited liability), a government body or any other type, or if you are not sure, do not sign this form — write to legal@saccadeproduction.com.
+      ru: Отметьте, чтобы подтвердить, что компания — корпорация по налоговым правилам США (считается по правилам США, а не по законам вашей страны). Иностранная компания, все владельцы которой отвечают ограниченно (например, Ltd, LLC, GmbH, ООО), для налогов США — корпорация, если только она не подавала в IRS форму 8832, чтобы её считали иначе. Если компания — партнёрство, траст, «прозрачная» компания (например, с одним владельцем, выбравшая такой статус, или с владельцем, который отвечает неограниченно), госорган или другого типа, или вы не уверены — не подписывайте эту форму, напишите на legal@saccadeproduction.com.
+  Line 5. Chapter 4 status (FATCA status):
+    title_ru: Строка 5. Статус по FATCA
+    hint:
+      en: 'Needed only for certain U.S.-source payments such as royalties or interest; for payments for services it is not required, so if none of the options clearly fits, leave it empty and press Next. Active NFFE — a company that is not a bank, fund or other financial institution and earns mostly from its own business (for example production or creative services): less than 50% of its income last year and less than 50% of its assets are passive (dividends, interest, rents, royalties and similar; rents and royalties the company earns from its own active business, through its own employees, do not count as passive). Passive NFFE — a non-financial company that does not meet that test, for example a holding company. Next you confirm the status you chose (Part XXV or XXVI). If the company is a financial institution or has another status, write to legal@saccadeproduction.com.'
+      ru: 'Нужна только для некоторых выплат из источников в США, например роялти или процентов; для оплаты услуг строка не обязательна — если ни один вариант точно не подходит, оставьте пустой и нажмите «Далее». «Активная нефинансовая компания» — не банк, не фонд и не другая финансовая организация, зарабатывает в основном своим бизнесом (например, продакшн или творческие услуги): меньше 50% дохода за прошлый год и меньше 50% активов — пассивные (дивиденды, проценты, аренда, роялти и т. п.; аренда и роялти от собственной активной деятельности компании, которую ведут её сотрудники, пассивными не считаются). «Пассивная» — нефинансовая компания, которая этому не соответствует, например холдинг. Дальше вы подтвердите выбранный статус (раздел XXV или XXVI). Если компания — финансовая организация или у неё другой статус, напишите на legal@saccadeproduction.com.'
+  Line 39. Active NFFE certification:
+    title_ru: 'Строка 39. Подтверждение: активная нефинансовая компания'
+    hint:
+      en: |-
+        Tick to make this certification (Part XXV of the form):
+
+        I certify that: • The entity identified in Part I is a foreign entity that is not a financial institution; • Less than 50% of such entity’s gross income for the preceding calendar year is passive income; and • Less than 50% of the assets held by such entity are assets that produce or are held for the production of passive income (calculated as a weighted average of the percentage of passive assets measured quarterly) (see instructions for the definition of passive income).
+      ru: |-
+        Отметьте, чтобы сделать это заявление (раздел XXV формы). Перевод для удобства, действует английский текст:
+
+        Подтверждаю, что: • компания из раздела I — иностранная компания и не финансовая организация; • меньше 50% её валового дохода за прошлый календарный год — пассивный доход; и • меньше 50% её активов — активы, которые приносят пассивный доход или держатся для его получения (средневзвешенная доля пассивных активов по поквартальным замерам; что такое пассивный доход — в инструкции).
+  Line 40a. Passive NFFE certification:
+    title_ru: 'Строка 40a. Подтверждение: пассивная нефинансовая компания'
+    hint:
+      en: |-
+        Tick to make this certification (Part XXVI of the form):
+
+        I certify that the entity identified in Part I is a foreign entity that is not a financial institution (other than an investment entity organized in a possession of the United States) and is not certifying its status as a publicly traded NFFE (or affiliate), excepted territory NFFE, active NFFE, direct reporting NFFE, or sponsored direct reporting NFFE.
+      ru: |-
+        Отметьте, чтобы сделать это заявление (раздел XXVI формы). Перевод для удобства, действует английский текст:
+
+        Подтверждаю, что компания из раздела I — иностранная компания, не финансовая организация (кроме инвестиционной компании, созданной на территории, находящейся во владении США) и не заявляет статус публичной NFFE (или её аффилированного лица), освобождённой NFFE территории, находящейся во владении США, активной NFFE, NFFE с прямой отчётностью или спонсируемой NFFE с прямой отчётностью.
+  Line 40b. No substantial U.S. owners:
+    title_ru: Строка 40b. Нет существенных владельцев из США
+    hint:
+      en: |-
+        Tick to certify: I further certify that the entity identified in Part I has no substantial U.S. owners (or, if applicable, no controlling U.S. persons).
+
+        A substantial U.S. owner is generally a U.S. citizen, U.S. resident or U.S. company that owns, directly or indirectly, more than 10% of the company. If the company has one, do not sign this form — write to legal@saccadeproduction.com.
+      ru: |-
+        Отметьте, чтобы подтвердить (перевод для удобства, действует английский текст): компания из раздела I не имеет существенных владельцев из США (или, если применимо, контролирующих лиц из США).
+
+        Существенный владелец из США — обычно гражданин, резидент или компания США, которые прямо или косвенно владеют более чем 10% компании. Если такой есть, не подписывайте эту форму — напишите на legal@saccadeproduction.com.
+  Line 6. Permanent residence address:
+    title_ru: Строка 6. Адрес постоянного местонахождения компании
+    hint:
+      en: Street, building, office — the company's address in the country where it is a tax resident (usually its registered address), in Latin letters. Not a P.O. box or an in-care-of address (a registered address is fine).
+      ru: Улица, дом, офис — адрес компании в стране её налогового резидентства (обычно юридический адрес), латиницей. Не абонентский ящик и не адрес «для передачи» (юридический адрес подходит).
+  Line 6. City or town, state or province, postal code:
+    title_ru: Строка 6. Город, регион, индекс
+    hint:
+      en: In Latin letters.
+      ru: Латиницей.
+  Line 6. Country:
+    title_ru: Строка 6. Страна
+    hint:
+      en: In English, for example Israel.
+      ru: По-английски, например Israel.
+  The entity's mailing address is different:
+    title_ru: Почтовый адрес компании другой
+    hint:
+      en: Tick only if the company gets mail at a different address — then fill in line 7. Otherwise leave it and press Next.
+      ru: Отметьте, только если компания получает почту по другому адресу, — тогда заполните строку 7. Иначе просто нажмите «Далее».
+  Line 7. Mailing address:
+    title_ru: Строка 7. Почтовый адрес
+    hint:
+      en: Street, building, office, in Latin letters.
+      ru: Улица, дом, офис, латиницей.
+  Line 7. City or town, state or province, postal code:
+    title_ru: Строка 7. Город, регион, индекс
+    hint:
+      en: In Latin letters.
+      ru: Латиницей.
+  Line 7. Country:
+    title_ru: Строка 7. Страна
+    hint:
+      en: In English.
+      ru: По-английски.
+  Line 8. U.S. taxpayer identification number (TIN):
+    title_ru: Строка 8. Налоговый номер США (EIN)
+    hint:
+      en: Only if the company has one (EIN). No U.S. number — leave it empty and press Next.
+      ru: Только если он у компании есть (EIN). Нет номера США — оставьте пустым и нажмите «Далее».
+  Line 9b. Foreign TIN:
+    title_ru: Строка 9b. Иностранный налоговый номер
+    hint:
+      en: The tax identification number issued to the company by the country where it is a tax resident (for example a company registration or VAT number, if that is its tax number). If it has none, leave it empty and see line 9c.
+      ru: Налоговый номер, который компании выдала страна её налогового резидентства (например, регистрационный номер или номер плательщика НДС, если он и есть налоговый). Нет номера — оставьте пустым и посмотрите строку 9c.
+  Line 9b. Foreign TIN (required with treaty benefits):
+    title_ru: Строка 9b. Иностранный налоговый номер (обязателен при льготе)
+    hint:
+      en: The tax identification number issued to the company by the country where it is a tax resident (for example a company registration or VAT number, if that is its tax number). It is required because the company claims treaty benefits (line 14a). If the company has no such number, write to legal@saccadeproduction.com.
+      ru: Налоговый номер, который компании выдала страна её налогового резидентства (например, регистрационный номер или номер плательщика НДС, если он и есть налоговый). Он обязателен, потому что компания заявляет льготу по соглашению (строка 14a). Если такого номера нет — напишите на legal@saccadeproduction.com.
+  Line 9c. FTIN not legally required:
+    title_ru: Строка 9c. Налоговый номер по закону не нужен
+    hint:
+      en: Tick only if you left line 9b empty because the company is not legally required to have a tax number in the country where it is a tax resident (for example, that country does not issue tax numbers to companies). Otherwise leave it.
+      ru: Отметьте, только если оставили строку 9b пустой, потому что по закону страны налогового резидентства компании налоговый номер ей не нужен (например, страна не выдаёт компаниям налоговых номеров). Иначе не отмечайте.
+  Line 10. Reference number(s):
+    title_ru: Строка 10. Справочный номер
+    hint:
+      en: Leave it empty unless Saccade Media House asked you to enter a reference number.
+      ru: Оставьте пустым, если Saccade Media House не просила указать номер.
+  Line 14a. The entity claims treaty benefits as a resident of a treaty country:
+    title_ru: Строка 14a. Компания заявляет льготу как резидент страны соглашения
+    hint:
+      en: Tick only if the company claims a reduced rate of, or exemption from, U.S. withholding under the income tax treaty between its country and the United States (Part III). For services performed entirely outside the United States no U.S. tax applies, and you do not need to claim treaty benefits. If the company performs services in the United States, claim the business profits article here (see line 15) or write to legal@saccadeproduction.com. If you tick, you will also give the company's foreign tax number (line 9b) and fill in lines 14a–15; this certifies that the beneficial owner is a resident of that country within the meaning of the treaty. Otherwise leave it and press Next. If unsure, ask your tax adviser.
+      ru: Отметьте, только если компания заявляет пониженную ставку удержания налога США или освобождение от него по соглашению об избежании двойного налогообложения между её страной и США (раздел III). За услуги, оказанные целиком за пределами США, налог США не взимается, и льгота не нужна. Если компания оказывает услуги в США, заявите здесь льготу по статье о прибыли от предпринимательской деятельности (см. строку 15) или напишите на legal@saccadeproduction.com. Если отметите — дальше укажете иностранный налоговый номер компании (строка 9b) и заполните строки 14a–15; так вы подтверждаете, что компания — резидент этой страны в смысле соглашения. Иначе просто нажмите «Далее». Если не уверены — спросите своего налогового консультанта.
+  Line 14a. Treaty country:
+    title_ru: Строка 14a. Страна соглашения
+    hint:
+      en: The treaty country where the company is a resident, in English.
+      ru: Страна соглашения, где компания резидент, по-английски.
+  Line 14b. The entity meets the limitation on benefits requirements:
+    title_ru: Строка 14b. Компания соответствует условиям об ограничении льгот
+    hint:
+      en: 'Tick to certify: the beneficial owner derives the item (or items) of income for which the treaty benefits are claimed, and, if applicable, meets the requirements of the treaty provision dealing with limitation on benefits. Next you choose the type of provision.'
+      ru: 'Отметьте, чтобы подтвердить (перевод для удобства, действует английский текст): компания получает доход, по которому заявляет льготу, и, если применимо, соответствует условиям статьи соглашения об ограничении льгот. Дальше выберите тип такого условия.'
+  Line 14b. Type of limitation on benefits provision:
+    title_ru: Строка 14b. Тип условия об ограничении льгот
+    hint:
+      en: Choose the limitation on benefits test the company meets. If the treaty has no such article, choose “No LOB article in treaty”. If unsure, ask your tax adviser.
+      ru: Выберите условие об ограничении льгот, которому соответствует компания. Если в соглашении такой статьи нет — «В соглашении нет статьи об ограничении льгот». Если не уверены — спросите своего налогового консультанта.
+  'Line 14b. Other: article and paragraph':
+    title_ru: Строка 14b. Другое — статья и пункт
+    hint:
+      en: The article and paragraph of the treaty with the limitation on benefits test the company meets.
+      ru: Статья и пункт соглашения с условием об ограничении льгот, которому соответствует компания.
+  Line 15. Article and paragraph of the treaty:
+    title_ru: Строка 15. Статья и пункт соглашения
+    hint:
+      en: Fill in line 15 only if the company claims a special rate or conditions under a specific article — for example business profits for services performed in the United States when the company has no permanent establishment there, or a reduced rate for royalties. Otherwise leave lines 15 empty.
+      ru: Строку 15 заполняйте, только если компания заявляет особую ставку или условия по конкретной статье — например, по прибыли от предпринимательской деятельности за услуги, оказанные в США, если у компании нет там постоянного представительства, или пониженную ставку для роялти. Иначе оставьте строки 15 пустыми.
+  Line 15. Rate of withholding, %:
+    title_ru: Строка 15. Ставка удержания, %
+    hint:
+      en: The rate of U.S. withholding the company claims, in percent.
+      ru: Ставка удержания налога США, которую заявляет компания, в процентах.
+  Line 15. Type of income:
+    title_ru: Строка 15. Вид дохода
+    hint:
+      en: The type of income this rate applies to, in English.
+      ru: Вид дохода, к которому применяется ставка, по-английски.
+  Line 15. Additional conditions:
+    title_ru: Строка 15. Дополнительные условия
+    hint:
+      en: The additional conditions in that article that the company meets to be eligible for this rate, in English.
+      ru: Дополнительные условия этой статьи, которым компания соответствует для этой ставки, по-английски.
+  I certify that I have the capacity to sign for the entity identified on line 1:
+    title_ru: Подтверждаю, что вправе подписывать за компанию из строки 1
+    hint:
+      en: 'The form must be signed by an officer or another person authorized to sign for the company (for example a director). Tick to confirm that you are. If you are not, do not sign — write to legal@saccadeproduction.com and we will send the form to the right person. If you sign under a power of attorney, write to us too: the power of attorney must be attached to the form.'
+      ru: 'Форму подписывает руководитель или другой человек, который вправе подписывать за компанию (например, директор). Отметьте, чтобы это подтвердить. Если вы не вправе — не подписывайте, напишите на legal@saccadeproduction.com, и мы отправим форму нужному человеку. Если подписываете по доверенности — тоже напишите нам: доверенность нужно приложить к форме.'
+  Print name of authorized signer:
+    title_ru: Имя подписанта
+    hint:
+      en: Your full name in Latin letters.
+      ru: Ваше полное имя латиницей.
+  Signature of individual authorized to sign for beneficial owner:
+    title_ru: Подпись
+    hint:
+      en: |-
+        **By signing, you make the following certification (Part XXX of the form) under penalties of perjury.** Read it before you sign.
+
+        Under penalties of perjury, I declare that I have examined the information on this form and to the best of my knowledge and belief it is true, correct, and complete. I further certify under penalties of perjury that:
+
+        • The entity identified on line 1 of this form is the beneficial owner of all the income or proceeds to which this form relates, is using this form to certify its status for chapter 4 purposes, or is submitting this form for purposes of section 6050W or 6050Y;
+
+        • The entity identified on line 1 of this form is not a U.S. person;
+
+        • This form relates to: (a) income not effectively connected with the conduct of a trade or business in the United States, (b) income effectively connected with the conduct of a trade or business in the United States but is not subject to tax under an income tax treaty, (c) the partner’s share of a partnership’s effectively connected taxable income, or (d) the partner’s amount realized from the transfer of a partnership interest subject to withholding under section 1446(f); and
+
+        • For broker transactions or barter exchanges, the beneficial owner is an exempt foreign person as defined in the instructions.
+
+        Furthermore, I authorize this form to be provided to any withholding agent that has control, receipt, or custody of the income of which the entity on line 1 is the beneficial owner or any withholding agent that can disburse or make payments of the income of which the entity on line 1 is the beneficial owner.
+
+        I agree that I will submit a new form within 30 days if any certification on this form becomes incorrect.
+
+        Your signature is the last step: when you sign and press Complete, the form is sent. Draw your signature with your finger or mouse. The form is marked as signed electronically, and the date and time of signing are recorded.
+      ru: |-
+        **Подписывая, вы делаете это заявление (раздел XXX формы) под страхом наказания за лжесвидетельство.** Прочитайте его до подписи. Перевод для удобства: в форме — английский текст, действует он.
+
+        Под страхом наказания за лжесвидетельство заявляю, что проверил(а) сведения в этой форме и, насколько мне известно и по моему убеждению, они верны, точны и полны. Также под страхом наказания за лжесвидетельство подтверждаю, что:
+
+        • компания из строки 1 этой формы — фактический получатель (бенефициар) всех доходов или поступлений, к которым относится эта форма, либо использует эту форму, чтобы подтвердить свой статус для целей главы 4, либо подаёт её для целей разделов 6050W или 6050Y;
+
+        • компания из строки 1 этой формы не является «лицом США»;
+
+        • форма относится: (a) к доходу, не связанному фактически с ведением торговли или бизнеса в США, (b) к доходу, фактически связанному с ведением торговли или бизнеса в США, но не облагаемому налогом по соглашению о подоходном налоге, (c) к доле партнёра в фактически связанном облагаемом доходе партнёрства или (d) к сумме, полученной партнёром при передаче доли в партнёрстве, с которой удерживается налог по разделу 1446(f); и
+
+        • для брокерских операций и бартерных обменов фактический получатель — освобождённое иностранное лицо, как определено в инструкции.
+
+        Кроме того, разрешаю передавать эту форму любому налоговому агенту, который контролирует, получает или хранит доход, фактическим получателем которого является компания из строки 1, либо который может распоряжаться таким доходом или выплачивать его.
+
+        Обязуюсь подать новую форму в течение 30 дней, если любое заявление в этой форме станет неверным.
+
+        Подпись — последний шаг: когда вы подпишете и нажмёте «Завершить», форма уйдёт. Нарисуйте подпись пальцем или мышью. В форме будет отметка, что она подписана электронно; дата и время подписи записываются.
 templates:
   1:
     name: NDA Accumulator
@@ -348,3 +864,189 @@ templates:
             Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно для исполнения договора или для требований по нему и защиты от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
 
             Перевод для удобства (действует английский текст): соглашаюсь подписать договор электронно; подтверждаю, что я — лицо, указанное в договоре, или вправе подписать за него и что подписываю через свою почту, которая принадлежит мне и которой управляю только я; соглашаюсь, что моя электронная подпись имеет ту же силу, что подпись от руки. Без этой галочки подписать нельзя.
+  79:
+    name: W-8BEN
+    name_ru: W-8BEN — налоговая форма США
+    completed_body:
+      en: 'Your Form W-8BEN has been sent to Saccade Media House. A copy will be sent to your email. If anything on the form becomes incorrect (for example, you become a tax resident of another country), send us a new form within 30 days. Questions: legal@saccadeproduction.com.'
+      ru: Форма W-8BEN отправлена в Saccade Media House. Копия придёт вам на почту. Если что-то в форме станет неверным (например, вы станете налоговым резидентом другой страны), пришлите нам новую форму в течение 30 дней. Вопросы — legal@saccadeproduction.com.
+  85:
+    name: W-8BEN-E
+    name_ru: W-8BEN-E — налоговая форма США для компаний
+    completed_body:
+      en: 'The company’s Form W-8BEN-E has been sent to Saccade Media House. A copy will be sent to your email. If anything on the form becomes incorrect (for example, the company changes its address, status or country of tax residence), send us a new form within 30 days. Questions: legal@saccadeproduction.com.'
+      ru: Форма W-8BEN-E компании отправлена в Saccade Media House. Копия придёт вам на почту. Если что-то в форме станет неверным (например, у компании сменятся адрес, статус или страна налогового резидентства), пришлите нам новую форму в течение 30 дней. Вопросы — legal@saccadeproduction.com.
+  99:
+    name: Certificate + Exhibit D Gantz
+    name_ru: Сертификат + Exhibit D Gantz
+    fields:
+      Full name (as in passport, Latin):
+        hint:
+          en: As in your passport, in Latin letters.
+          ru: Как в паспорте, латиницей.
+      Email:
+        hint:
+          en: Email for notices under the certificate and for service of process (Sec. 7).
+          ru: Почта для уведомлений по сертификату и для вручения документов по п. 7.
+      Tax number (if any):
+        hint:
+          en: Your tax number, if you have one. If you invoice as a sole proprietor, give that registration or tax number. Otherwise leave blank.
+          ru: ИНН или налоговый номер, если есть. Если выставляете счета как ИП — номер ИП.
+      Electronic signature consent:
+        hint:
+          en: |-
+            **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter in this form (name, address, tax number, email, phone, platform account, access location, role, description of your work, dates of your work and platform access, how you are engaged, remuneration and how you are paid, names of any persons you engaged, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+            We use them to secure the rights in your work on GANTZ, to meet the security requirements of our client for GANTZ and to keep proof of these documents. The legal basis is that this is necessary to perform our arrangement with you, and our legitimate interest in securing those rights, in meeting our obligations to the client and in establishing, exercising or defending legal claims. You are not legally required to provide them, but without the required fields the documents cannot be signed. The details in Part 1 of the acknowledgment are required by our client agreement; without them you cannot be given access to the GANTZ platform.
+
+            The data is stored for us by Hetzner on our server in Germany and on Google Drive: in backups encrypted with our key before upload, which Google cannot read, and as copies of the signed documents and their signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us.
+
+            Apart from these providers, we disclose it to our client for GANTZ, Stanislavsky Corp. (USA), and the studio for which it produces the project: the details in Part 1 of the Exhibit D acknowledgment, and on request the signed certificate without Schedule 2 and the signed acknowledgment. We also disclose it to our Affiliate, Individual Entrepreneur Mayilyan Elen Geghami (Armenia), which engaged or paid some contributors to GANTZ, only as needed to account for those payments and to secure the rights in your work, and to our legal and accounting advisers and, where needed to prove or enforce these documents, to courts or authorities.
+
+            Stanislavsky Corp. and the studio are in the USA and our Affiliate is in Armenia; no EU adequacy decision covers them. We disclose your data to them only as far as necessary to perform our arrangement with you and to establish, exercise or defend legal claims (GDPR Art. 49(1)(b) and (e)). Stanislavsky Corp. processes your platform activity data as its own controller (see Part 3 of the acknowledgment); this notice does not cover that processing.
+
+            We keep the signed documents and their signing record together for as long as the rights in your work may be exercised or claims under these documents can be brought.
+
+            You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what we still need to prove the rights or to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+
+            I agree to sign these documents electronically. I confirm that I am the person named in them and that I am signing through an email address that belongs to me and that only I control. I agree that my electronic signature has the same legal effect as my handwritten signature. Without this box ticked, the documents cannot be signed.
+          ru: |-
+            Перевод для удобства: документы составлены на английском; при расхождении этого перевода с английским текстом действует английский.
+
+            **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите в эту форму (имя, адрес, налоговый номер, почта, телефон, аккаунт на платформе, откуда заходите, роль, что вы сделали, даты работы и доступа к платформе, кем вас привлекли, вознаграждение и как его платят, имена тех, кого привлекли вы, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+            Они нужны, чтобы закрепить права на вашу работу над GANTZ, выполнить требования клиента GANTZ к безопасности и хранить доказательство этих документов. Правовое основание — это необходимо для исполнения нашей договорённости с вами, и наш законный интерес закрепить эти права, выполнить обязательства перед клиентом и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей документы не подписать. Данные части 1 листа требует договор с клиентом; без них доступ к платформе GANTZ дать нельзя.
+
+            Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске: в резервных копиях, зашифрованных нашим ключом до загрузки (их Google прочитать не может), и как копии подписанных документов и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет.
+
+            Кроме этих провайдеров, передаём данные клиенту GANTZ — компании Станиславски Корп. (США) и студии, для которой она делает проект: данные из части 1 листа Exhibit D, а по запросу — подписанный сертификат без приложения о вознаграждении и подписанный лист. Также передаём нашему аффилированному лицу — ИП Майилян Элен Гегамовна (Армения), которое привлекало или оплачивало часть участников GANTZ, — только для учёта этих выплат и закрепления прав на вашу работу, — и нашим юристам и бухгалтерам, а когда нужно доказать документы или добиться их исполнения, — суду или властям.
+
+            Станиславски Корп. и студия находятся в США, наше аффилированное лицо — в Армении; решения ЕС об адекватности, которое распространялось бы на них, нет. Передаём им данные только в той мере, в какой это нужно для исполнения нашей договорённости с вами и для предъявления требований или защиты от них (ст. 49(1)(b) и (e) Общего регламента ЕС о защите данных). Данные о ваших действиях на платформе Станиславски Корп. обрабатывает сама, как самостоятельный оператор (см. часть 3 листа); это уведомление их не касается.
+
+            Подписанные документы и журнал подписи храним вместе, пока можно осуществлять права на вашу работу или предъявлять требования по этим документам.
+
+            Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно, чтобы доказать права или предъявлять требования и защищаться от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+
+            Перевод для удобства (действует английский текст): соглашаюсь подписать документы электронно; подтверждаю, что я — лицо, указанное в них, и что подписываю через свою почту, которая принадлежит мне и которой управляю только я; соглашаюсь, что моя электронная подпись имеет ту же силу, что подпись от руки. Без этой галочки подписать нельзя.
+      Review before sending:
+        hint:
+          en: Your signatures are in place, but nothing has been sent yet. Minimize this panel (arrows in the top corner) and check all three documents. To fix something, tap a dot below and go back to that step. If all is correct, tick the box and press Complete.
+          ru: 'Подписи стоят, но ничего ещё не отправлено. Сверните это окно (стрелки в углу) и проверьте все три документа. Исправить — нажмите точку ниже и вернитесь к нужному шагу. Всё верно — поставьте галочку и нажмите «Завершить».'
+    completed_body:
+      en: 'Saccade Media House will countersign the certificate and send you a copy of the signed documents. Questions: legal@saccadeproduction.com.'
+      ru: Saccade Media House подпишет сертификат со своей стороны и пришлёт вам копию подписанных документов. Вопросы — legal@saccadeproduction.com.
+  100:
+    name: Exhibit D Gantz
+    name_ru: Exhibit D Gantz
+    fields:
+      Full name (as in passport, Latin):
+        hint:
+          en: As in your passport, in Latin letters.
+          ru: Как в паспорте, латиницей.
+      Electronic signature consent:
+        hint:
+          en: |-
+            **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter in this form (name, platform account email and login, phone, access location, role, dates of your platform access, how you are engaged, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+            We use them to meet the security requirements of our client for GANTZ and to keep proof of this acknowledgment. The legal basis is that this is necessary to perform our arrangement with you, and our legitimate interest in meeting our obligations to the client and in establishing, exercising or defending legal claims. You are not legally required to provide them, but without the required fields the acknowledgment cannot be signed. The details in Part 1 are required by our client agreement; without them you cannot be given access to the GANTZ platform.
+
+            The data is stored for us by Hetzner on our server in Germany and on Google Drive: in backups encrypted with our key before upload, which Google cannot read, and as copies of the signed acknowledgment and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us.
+
+            Apart from these providers, we disclose it to our client for GANTZ, Stanislavsky Corp. (USA), and the studio for which it produces the project: the details in Part 1 of the acknowledgment and, on request, the signed acknowledgment. We also disclose it to our legal and accounting advisers and, where needed to prove or enforce this acknowledgment, to courts or authorities.
+
+            Stanislavsky Corp. and the studio are in the USA; no EU adequacy decision covers them. We disclose your data to them only as far as necessary to perform our arrangement with you and to establish, exercise or defend legal claims (GDPR Art. 49(1)(b) and (e)). Stanislavsky Corp. processes your platform activity data as its own controller (see Part 3 of the acknowledgment); this notice does not cover that processing.
+
+            We keep it for as long as you have access to the GANTZ platform and afterwards for as long as claims under this acknowledgment can be brought.
+
+            You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what we still need to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+
+            I agree to sign this acknowledgment electronically. I confirm that I am the person named in it and that I am signing through an email address that belongs to me and that only I control. I agree that my electronic signature has the same legal effect as my handwritten signature. Without this box ticked, the acknowledgment cannot be signed.
+          ru: |-
+            Перевод для удобства: лист составлен на английском; при расхождении этого перевода с английским текстом действует английский.
+
+            **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите в эту форму (имя, почта и логин на платформе, телефон, откуда заходите, роль, даты доступа к платформе, кем вас привлекли, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+            Они нужны, чтобы выполнить требования клиента GANTZ к безопасности и хранить доказательство этого листа. Правовое основание — это необходимо для исполнения нашей договорённости с вами, и наш законный интерес выполнить обязательства перед клиентом и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей лист не подписать. Данные части 1 требует договор с клиентом; без них доступ к платформе GANTZ дать нельзя.
+
+            Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске: в резервных копиях, зашифрованных нашим ключом до загрузки (их Google прочитать не может), и как копии подписанного листа и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет.
+
+            Кроме этих провайдеров, передаём данные клиенту GANTZ — компании Станиславски Корп. (США) и студии, для которой она делает проект: данные из части 1 листа, а по запросу — подписанный лист. Также передаём нашим юристам и бухгалтерам, а когда нужно доказать лист или добиться его исполнения, — суду или властям.
+
+            Станиславски Корп. и студия находятся в США; решения ЕС об адекватности, которое распространялось бы на них, нет. Передаём им данные только в той мере, в какой это нужно для исполнения нашей договорённости с вами и для предъявления требований или защиты от них (ст. 49(1)(b) и (e) Общего регламента ЕС о защите данных). Данные о ваших действиях на платформе Станиславски Корп. обрабатывает сама, как самостоятельный оператор (см. часть 3 листа); это уведомление их не касается.
+
+            Храним, пока у вас есть доступ к платформе GANTZ, и после — пока по этому листу можно предъявить требования.
+
+            Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно, чтобы предъявлять требования и защищаться от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+
+            Перевод для удобства (действует английский текст): соглашаюсь подписать лист электронно; подтверждаю, что я — лицо, указанное в нём, и что подписываю через свою почту, которая принадлежит мне и которой управляю только я; соглашаюсь, что моя электронная подпись имеет ту же силу, что подпись от руки. Без этой галочки подписать нельзя.
+      Review before sending:
+        hint:
+          en: Your signature is in place, but nothing has been sent yet. Minimize this panel (arrows in the top corner) and check the acknowledgment. To fix something, tap a dot below and go back to that step. If all is correct, tick the box and press Complete.
+          ru: 'Подпись стоит, но ничего ещё не отправлено. Сверните это окно (стрелки в углу) и проверьте лист. Исправить — нажмите точку ниже и вернитесь к нужному шагу. Всё верно — поставьте галочку и нажмите «Завершить».'
+    completed_body:
+      en: 'Thank you. Saccade Media House has received your signed acknowledgment; a copy will be sent to your email. Questions: legal@saccadeproduction.com.'
+      ru: Saccade Media House получила ваш подписанный лист; копия придёт вам на почту. Вопросы — legal@saccadeproduction.com.
+  110:
+    name: Contact and Payment Details
+    name_ru: Контактные и платёжные данные
+    fields:
+      Full name (as in passport, Latin):
+        hint:
+          en: As in your passport, in Latin letters.
+          ru: Как в паспорте, латиницей.
+      Electronic signature consent:
+        hint:
+          en: |-
+            **Privacy notice.** Saccade Media House, Inc. (Delaware, USA; contact: legal@saccadeproduction.com) collects the details you enter in this form (name, status, trade or entity name, address, tax ID, email, phone, signatory name and capacity, bank account details, signature) and the technical data recorded automatically when you sign (IP address, device, time zone, the language you chose, time of each step).
+
+            We use them to prepare contracts, invoices, tax forms and other documents with you, to pay you, and to keep proof of the details you gave us. We also keep them in a contact record linked to your email, which may also hold details from other forms you signed with us or that you or your company sent us by email or invoice, so that the next forms we send you open with these fields filled in; you can change any of them in the form before signing, and what you sign updates the record. The filled fields are shown only after you open the form from our email or confirm your email with a code. The legal basis is that this is necessary to take steps at your request before entering into a contract with you and to perform it (if you give the details of an entity, our legitimate interest in contracting with and paying that entity), and our legitimate interests in not asking you for the same details again, in complying with the tax and accounting laws that apply to us and our affiliates (in particular in the USA), and in establishing, exercising or defending legal claims. You are not legally required to provide them, but without the required fields the form cannot be signed, and without bank details we cannot pay you by bank transfer.
+
+            The data is stored for us by Hetzner on our server in Germany and on Google Drive: in backups encrypted with our key before upload, which Google cannot read, and as copies of the signed form and its signing record. Signing emails are sent through our email provider Spacemail. We work with the data from the USA and Israel; Israel has an EU adequacy decision, the USA has none that covers us.
+
+            Apart from these providers, we disclose it to the banks and payment providers through which we pay you (ours, yours and any intermediary banks), to our affiliate that contracts with or pays you, if any (for example Individual Entrepreneur Mayilyan Elen Geghami, Armenia), to our legal and accounting advisers and, where the law requires it or where needed to prove or enforce our documents, to tax authorities (such as the U.S. Internal Revenue Service), courts or other authorities. Recipients outside the EU that no EU adequacy decision covers receive your data only as far as necessary to perform our contract with you, including to make a payment you are owed (GDPR Art. 49(1)(b)), or to establish, exercise or defend legal claims (Art. 49(1)(e)).
+
+            We keep the contact record until two years after the last document you signed with us, or earlier if you ask us to delete it. We keep the signed form and records of payments to you for as long as tax and accounting law requires and as long as claims about those payments can be brought. You may object at any time to our keeping your details in the contact record; we will then delete the record. The documents you signed are not affected.
+
+            You may ask us at legal@saccadeproduction.com to see, correct or delete your data, to receive a copy of it, or to restrict or object to its use; we may keep what we still need to meet our legal obligations or to establish, exercise or defend legal claims. You may also complain to the data protection authority of the country where you live or work.
+
+            I agree to sign this form electronically. I confirm that I am the person named in it or am authorised to give these details for the entity named in it, and that I am signing through an email address that belongs to me and that only I control. I agree that my electronic signature has the same legal effect as my handwritten signature. Without this box ticked, the form cannot be signed.
+          ru: |-
+            Перевод для удобства: форма составлена на английском; при расхождении этого перевода с английским текстом действует английский.
+
+            **Уведомление о данных.** Saccade Media House, Inc. (Делавэр, США; legal@saccadeproduction.com) собирает данные, которые вы вводите в эту форму (имя, статус, название ИП или компании, адрес, налоговый номер, почта, телефон, имя и должность подписанта, банковские реквизиты, подпись), и технические данные, которые записываются автоматически при подписи (IP-адрес, устройство, часовой пояс, выбранный язык, время каждого шага).
+
+            Они нужны, чтобы готовить с вами договоры, счета, налоговые формы и другие документы, платить вам и хранить подтверждение данных, которые вы нам дали. Ещё мы храним их в карточке контакта, привязанной к вашей почте (в ней могут быть и данные из других подписанных вами форм или из писем и счетов от вас или вашей компании), чтобы следующие формы от нас открывались с уже заполненными полями; любое из них можно изменить в форме до подписи, а то, что вы подписали, обновляет карточку. Заполненные поля видны, только если вы открыли форму из нашего письма или подтвердили почту кодом. Правовое основание — это необходимо, чтобы по вашей просьбе подготовить договор с вами и исполнять его (если вы даёте данные компании — наш законный интерес заключить договор с ней и платить ей), а также наш законный интерес не спрашивать у вас одно и то же повторно, соблюдать налоговое и бухгалтерское законодательство, которое действует для нас и наших аффилированных лиц (прежде всего в США), и предъявлять требования или защищаться от них. По закону давать данные не обязательно, но без обязательных полей форму не подписать, а без банковских реквизитов мы не сможем заплатить вам переводом.
+
+            Данные хранятся для нас у Hetzner на нашем сервере в Германии и на Google Диске: в резервных копиях, зашифрованных нашим ключом до загрузки (их Google прочитать не может), и как копии подписанной формы и журнала подписи. Письма о подписи уходят через нашего почтового провайдера Spacemail. С данными работаем из США и Израиля; для Израиля есть решение ЕС об адекватности, для нас в США — нет.
+
+            Кроме этих провайдеров, передаём данные банкам и платёжным сервисам, через которые вам платим (нашим, вашему и банкам-посредникам), нашему аффилированному лицу, которое заключает с вами договор или платит вам (если есть; например, ИП Майилян Элен Гегамовна, Армения), нашим юристам и бухгалтерам, а когда этого требует закон или нужно доказать наши документы или добиться их исполнения, — налоговым органам (например, Налоговой службе США), суду или другим государственным органам. Получателям за пределами ЕС, на которых не распространяется решение ЕС об адекватности, передаём данные только в той мере, в какой это нужно для исполнения нашего договора с вами, в том числе чтобы провести причитающийся вам платёж (ст. 49(1)(b) Общего регламента ЕС о защите данных), или чтобы предъявлять требования или защищаться от них (ст. 49(1)(e)).
+
+            Карточку контакта храним до истечения двух лет после последнего документа, который вы с нами подписали, или удаляем раньше по вашей просьбе. Подписанную форму и записи о платежах вам храним столько, сколько требует налоговое и бухгалтерское законодательство и пока по этим платежам можно предъявить требования. Вы в любой момент можете возразить против хранения ваших данных в карточке контакта — тогда мы её удалим. Подписанные документы это не затрагивает.
+
+            Напишите на legal@saccadeproduction.com, чтобы посмотреть, исправить или удалить свои данные, получить их копию, ограничить их использование или возразить против него; то, что ещё нужно для исполнения наших обязанностей по закону или чтобы предъявлять требования и защищаться от них, мы можем сохранить. Пожаловаться можно также в орган по защите данных страны, где вы живёте или работаете.
+
+            Перевод для удобства (действует английский текст): соглашаюсь подписать форму электронно; подтверждаю, что я — лицо, указанное в ней, или вправе дать эти данные за указанную в ней компанию, и что подписываю через свою почту, которая принадлежит мне и которой управляю только я; соглашаюсь, что моя электронная подпись имеет ту же силу, что подпись от руки. Без этой галочки подписать нельзя.
+      Phone:
+        hint:
+          en: With country code, e.g. +972 50 123 4567.
+          ru: С кодом страны, например +972 50 123 4567.
+      Recipient signature:
+        hint:
+          en: Draw it with your finger or mouse, type your name or upload a photo of your signature. By signing, you confirm Part 3 of the form.
+          ru: |-
+            Нарисуйте пальцем или мышью, наберите имя или загрузите фото подписи. Подписью вы подтверждаете часть 3 формы.
+
+            Перевод части 3 для удобства (действует английский текст). Подписант подтверждает, что данные выше верны и полны и что он — Сторона или вправе дать эти данные и подписать эту форму от её имени. За правильность данных отвечает Сторона.
+
+            Saccade и её аффилированные лица могут использовать эти данные, чтобы готовить со Стороной договоры, счета, налоговые формы и другие документы и платить Стороне. Платёж от Saccade или её аффилированного лица либо за них на счёт из части 2 — или на другой счёт, который Сторона сообщила в порядке, описанном ниже, — считается платежом Стороне в отправленной сумме. Если владелец счёта — не Сторона, Сторона поручает Saccade платить на этот счёт и подтверждает, что владелец согласился принимать платежи за неё; Saccade вправе отказаться платить на счёт, который принадлежит не Стороне. Каждая сторона оплачивает комиссии своего банка, комиссии банков-посредников — Сторона. Если платёж вернулся из-за неверных или неполных данных, Saccade отправит его снова, когда деньги вернутся, за вычетом удержанных с них комиссий.
+
+            Об изменении данных Сторона сообщает, подписав новую форму Saccade с новыми данными или написав на legal@saccadeproduction.com. Saccade вправе исходить из этих данных, пока не получит сообщение и не пройдёт разумный срок на его проверку. Любое изменение банковских реквизитов, как бы оно ни пришло, Saccade вправе проверить через контакт, который у неё уже есть, а не через указанный вместе с изменением; платёж, задержанный из-за такой проверки, не считается просроченным.
+
+            Сама по себе эта форма не обязывает Saccade привлекать Сторону или платить ей. Если договор между Saccade и Стороной по какому-либо вопросу этой части 3 устанавливает иное, действует договор. Форма регулируется правом штата Делавэр.
+      Review before sending:
+        hint:
+          en: Your signature is in place, but nothing has been sent yet. Minimize this panel (arrows in the top corner) and check the form. To fix something, tap a dot below and go back to that step. If all is correct, tick the box and press Complete.
+          ru: 'Подпись стоит, но ничего ещё не отправлено. Сверните это окно (стрелки в углу) и проверьте форму. Исправить — нажмите точку ниже и вернитесь к нужному шагу. Всё верно — поставьте галочку и нажмите «Завершить».'
+    completed_body:
+      en: 'Saccade Media House has received your details; a copy of the signed form will be sent to your email. Questions: legal@saccadeproduction.com.'
+      ru: Saccade Media House получила ваши данные; копия подписанной формы придёт вам на почту. Вопросы — legal@saccadeproduction.com.

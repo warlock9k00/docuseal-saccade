@@ -25,7 +25,7 @@ module SaccadeI18n
   CYR = /[А-Яа-яЁё]/
   LAT = /[A-Za-z]/
   # Latin words allowed inside Russian text (proper names, document labels)
-  LATIN_OK = /Saccade|Media|House|Inc|GANTZ|Gantz|NDA|Exhibit|ALL3|Accumulator|Puma|Hetzner|Google|Spacemail|DocuSeal|PDF|IP|SK-01|Recipient|Latin|\b[A-D]\b|legal@\S+|https?:\/\/\S+|\]\([^)]*\)/
+  LATIN_OK = /Saccade|Media|House|Inc|GANTZ|Gantz|NDA|Exhibit|ALL3|Accumulator|Puma|Hetzner|Google|Spacemail|DocuSeal|PDF|IP|SK-01|Recipient|Latin|W-8BEN|IRS|SSN|ITIN|FTIN|GIIN|FATCA|NFFE|EIN|Ltd|LLC|GmbH|IBAN|SWIFT|BIC|ABA|Israel|\b[IVX]+\b|\b[A-D]\b|legal@\S+|https?:\/\/\S+|\]\([^)]*\)/
 
   module_function
 
@@ -72,7 +72,10 @@ module SaccadeI18n
     return name if lang != 'ru' || name.blank?
 
     map = names_ru
-    map.keys.sort_by { |k| -k.length }.reduce(name.dup) { |n, k| n.gsub(k, map[k]) }
+    return name if map.empty?
+
+    # один проход, длинные имена первыми: иначе «W-8BEN» заменяется ещё раз внутри уже переведённого «W-8BEN-E»
+    name.gsub(Regexp.union(map.keys.sort_by { |k| -k.length }), map)
   end
 
   def para_lang(text)
@@ -92,8 +95,16 @@ module SaccadeI18n
   end
 
   # entry of the texts file for this field (template override first); :none = the file does not know the field
+  # test copies (ds test / ds check, docuseal-tools/clone.rb) keep the source id in preferences, so they show the
+  # source template's own texts (27.11; before that a copy showed only the shared texts)
+  def texts_id(template_id)
+    return template_id if template_id.nil? || (texts['templates'] || {}).key?(template_id)
+
+    Template.find_by(id: template_id)&.preferences&.dig('saccade_source_template_id') || template_id
+  end
+
   def hint_entry(name, template_id)
-    over = texts.dig('templates', template_id, 'fields')
+    over = texts.dig('templates', texts_id(template_id), 'fields')
     return over[name] || {} if over.is_a?(Hash) && over.key?(name)
 
     texts.dig('fields', name) || :none
@@ -126,7 +137,7 @@ module SaccadeI18n
   def localize_completed(msg, lang, template_id = nil)
     msg = msg.to_h.dup
     c = texts['completed'] || {}
-    body = texts.dig('templates', template_id, 'completed_body') || c['body']
+    body = texts.dig('templates', texts_id(template_id), 'completed_body') || c['body']
     msg['title'] = pick(c['title'], lang) || msg['title'] if c['title']
     msg['body'] = body ? pick(body, lang) : description_for(msg['body'], lang)
     msg
