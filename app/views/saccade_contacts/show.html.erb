@@ -1,0 +1,74 @@
+<%# Saccade, 2026-11-27: one contact card (see config/saccade_contacts.rb). Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade %>
+<% email = @card.value['email'] %>
+<div class="max-w-4xl mx-auto px-2 mb-10">
+  <div class="mt-4 mb-2"><%= link_to '← Contacts', saccade_contacts_path, class: 'link text-sm' %></div>
+  <h1 class="text-3xl md:text-4xl font-bold mb-1"><%= @data['full_name'].presence || email %></h1>
+  <p class="text-base-content/70 mb-6"><%= email %><% if @card.value['updated_at'] %> · updated <%= l(Time.zone.parse(@card.value['updated_at']).in_time_zone(current_account.timezone), format: :short) rescue @card.value['updated_at'] %><% end %></p>
+
+  <h2 class="text-xl font-bold mb-2">Details</h2>
+  <%= form_tag saccade_contact_path(@card.id), method: :patch, class: 'mb-8' do %>
+    <div class="rounded-xl border border-base-300 divide-y divide-base-300 mb-4">
+      <% SaccadeContacts::FIELDS.each do |key, (label, _names)| %>
+        <% src = @sources[key] %>
+        <label class="flex flex-col md:flex-row md:items-center gap-1 md:gap-3 p-3">
+          <span class="md:w-56 text-sm font-semibold"><%= label %></span>
+          <span class="flex-1">
+            <% if key == 'status' %>
+              <%= select_tag "card[#{key}]", options_for_select([['', ''], 'Individual', 'Sole proprietor', 'Entity'], @data[key]), class: 'select select-bordered select-sm w-full' %>
+            <% elsif %w[address bank_address notes].include?(key) %>
+              <%= text_area_tag "card[#{key}]", @data[key], rows: 2, class: 'textarea textarea-bordered w-full' %>
+            <% else %>
+              <%= text_field_tag "card[#{key}]", @data[key], class: 'input input-bordered input-sm w-full' %>
+            <% end %>
+            <% if src && @data[key].present? %>
+              <span class="text-xs text-base-content/60"><%= src['by'] == 'form' ? "from #{src['template']} ##{src['submission_id']}" : "by hand, #{src['user']}" %></span>
+            <% end %>
+          </span>
+        </label>
+      <% end %>
+    </div>
+    <button type="submit" class="btn btn-neutral text-base">Save</button>
+  <% end %>
+
+  <h2 class="text-xl font-bold mb-2">Documents</h2>
+  <% if @documents.empty? %>
+    <p class="mb-8 text-base-content/70">No documents for this email yet.</p>
+  <% else %>
+    <div class="rounded-xl border border-base-300 divide-y divide-base-300 mb-8">
+      <% @documents.each do |s| %>
+        <% state = if s.completed_at? then 'signed' elsif s.declined_at? then 'declined' elsif s.opened_at? then 'opened' elsif s.sent_at? then 'sent' else 'not opened' end %>
+        <div class="flex items-center gap-3 p-4">
+          <span class="flex-1"><span class="font-semibold"><%= s.submission.template&.name || s.submission.name %></span> <span class="text-base-content/60">· #<%= s.submission_id %> · <%= state %></span></span>
+          <%= link_to 'Open', submission_path(s.submission), class: 'btn btn-sm btn-outline' %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <h2 class="text-xl font-bold mb-2">Send a form</h2>
+  <p class="text-base-content/70 mb-2">Send the link to <%= email %>. After the email code, the empty fields are filled from this card.</p>
+  <div class="rounded-xl border border-base-300 divide-y divide-base-300 mb-8">
+    <% @templates.each do |t| %>
+      <div class="flex flex-col md:flex-row md:items-center gap-2 p-3">
+        <span class="flex-1"><span class="font-semibold"><%= t.name %></span> <span class="text-base-content/60">· <%= t.folder&.name %></span></span>
+        <input type="text" readonly value="<%= start_form_url(slug: t.slug) %>" class="input input-bordered input-sm md:w-80" onclick="this.select()">
+        <%= link_to 'Template', template_path(t), class: 'btn btn-sm btn-outline' %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @history.any? %>
+    <h2 class="text-xl font-bold mb-2">History</h2>
+    <div class="rounded-xl border border-base-300 divide-y divide-base-300 mb-8 text-sm">
+      <% @history.first(30).each do |h| %>
+        <div class="p-3">
+          <span class="text-base-content/60"><%= h['at'].to_s.sub('T', ' ').first(16) %> UTC ·</span>
+          <%= h['by'] == 'form' ? "#{h['template']} ##{h['submission_id']}" : "by hand, #{h['user']}" %>:
+          <%= (h['changes'] || {}).map { |k, (_old, new)| "#{SaccadeContacts::FIELDS.dig(k, 0) || k} → #{new.presence || '(empty)'}" }.join('; ').presence || 'card created' %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= button_to 'Delete card', saccade_contact_path(@card.id), method: :delete, class: 'btn btn-sm btn-ghost text-error', form: { data: { turbo_confirm: 'Delete this card? Documents stay in DocuSeal.' } } %>
+</div>

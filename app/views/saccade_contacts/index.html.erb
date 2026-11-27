@@ -1,0 +1,46 @@
+<%# Saccade, 2026-11-27: contact cards list (see config/saccade_contacts.rb). Modification of DocuSeal 3.3.8 (AGPL-3.0); source: https://github.com/warlock9k00/docuseal-saccade %>
+<div class="max-w-4xl mx-auto px-2 mb-10">
+  <h1 class="text-3xl md:text-4xl font-bold mt-4 mb-2">Contacts</h1>
+  <p class="text-base-content/70 mb-6">One card per email. Signed forms update the card; when the person opens a new form, its empty fields are filled from the card and they can change them.</p>
+
+  <div class="flex flex-wrap gap-2 mb-6">
+    <%= form_tag saccade_contacts_path, method: :get, class: 'flex gap-2 flex-1' do %>
+      <%= search_field_tag :q, @query, placeholder: 'Search name, email, entity', class: 'input input-bordered input-sm w-full' %>
+      <button type="submit" class="btn btn-sm btn-outline">Search</button>
+    <% end %>
+    <%= form_tag saccade_contacts_path, method: :post, class: 'flex gap-2' do %>
+      <%= email_field_tag :email, nil, placeholder: 'new@email', class: 'input input-bordered input-sm', required: true %>
+      <button type="submit" class="btn btn-sm btn-neutral">New card</button>
+    <% end %>
+  </div>
+
+  <% if @rows.empty? %>
+    <p class="text-lg">No cards yet.</p>
+  <% else %>
+    <div class="rounded-xl border border-base-300 divide-y divide-base-300 mb-8">
+      <% @rows.each do |r| %>
+        <a href="<%= saccade_contact_path(r[:id]) %>" class="flex items-center gap-3 p-4 hover:bg-base-200">
+          <span class="flex-1">
+            <span class="font-semibold"><%= r[:name].presence || r[:email] %></span>
+            <% if r[:entity].present? %><span class="text-base-content/60"> · <%= r[:entity] %></span><% end %><br>
+            <span class="text-sm text-base-content/60"><%= r[:email] %><%= " · #{r[:status]}" if r[:status].present? %></span>
+          </span>
+          <span class="text-sm text-base-content/60"><%= pluralize(@docs[r[:email]].to_i, 'document') %></span>
+        </a>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @without_card.any? && @query.blank? %>
+    <h2 class="text-xl font-bold mb-2">Sent documents, no card yet</h2>
+    <p class="text-base-content/70 mb-2">A card appears when they sign. Create one now to fill details by hand.</p>
+    <div class="rounded-xl border border-base-300 divide-y divide-base-300">
+      <% @without_card.sort.each do |email, n| %>
+        <div class="flex items-center gap-3 p-4">
+          <span class="flex-1"><%= email %> <span class="text-base-content/60">· <%= pluralize(n, 'document') %></span></span>
+          <%= button_to 'Create card', saccade_contacts_path, params: { email: }, method: :post, class: 'btn btn-sm btn-outline' %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
